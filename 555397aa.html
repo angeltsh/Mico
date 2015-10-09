@@ -153,6 +153,44 @@
         // document.querySelector('#send2uart').addEventListener('touchstart', send2uart);
         document.querySelector('#send2uart').addEventListener('click', send2uart);
 		
+		
+		$('#H').slider({
+			showTip: true,
+			min:0,
+			max:360,
+			value:10,
+			tipFormatter: function(value){
+				return value+'°';
+			},
+			onChange: function(value){
+				$('#vH').html(value);
+			}
+		});
+		$('#S').slider({
+			showTip: true,
+			min:0,
+			max:100,
+			value:70,
+			tipFormatter: function(value){
+				return value+'%';
+			},
+			onChange: function(value){
+				$('#vS').html(value);
+			}
+		});
+		$('#B').slider({
+			showTip: true,
+			min:0,
+			max:100,
+			value:70,
+			tipFormatter: function(value){
+				return value+'%';
+			},
+			onChange: function(value){
+				$('#vB').html(value);
+			}
+		});
+		
 		function HSB() {
 			var topic = device_id+'/in/write';
 			var H=$("#H").val();
@@ -228,45 +266,6 @@
         };
     } (console.log.bind(console), document.getElementById("debug")));
     console.error = console.debug = console.info =  console.log;
-
-</script>
-<script type="text/javascript">
-$('#H').slider({
-   	showTip: true,
-	min:0,
-	max:360,
-	value:10,
-	tipFormatter: function(value){
-		return value+'°';
-	},
-	onChange: function(value){
-		$('#vH').html(value);
-	}
-});
-$('#S').slider({
-   	showTip: true,
-	min:0,
-	max:100,
-	value:70,
-	tipFormatter: function(value){
-		return value+'%';
-	},
-	onChange: function(value){
-		$('#vS').html(value);
-	}
-});
-$('#B').slider({
-   	showTip: true,
-	min:0,
-	max:100,
-	value:70,
-	tipFormatter: function(value){
-		return value+'%';
-	},
-	onChange: function(value){
-		$('#vB').html(value);
-	}
-});
 
 </script>
 </html>
