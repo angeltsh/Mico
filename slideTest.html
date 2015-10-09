@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Format Tip Information - jQuery EasyUI Demo</title>
+<link rel="stylesheet" type="text/css" href="./easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="./easyui/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="./easyui/demo.css">
+<script type="text/javascript" src="./easyui/jquery.min.js"></script>
+<script type="text/javascript" src="./easyui/jquery.easyui.min.js"></script>
+</head>
+<body>
+<h2>Format Tip Information</h2>
+<p>This sample shows how to format tip information.</p>
+<div style="margin:15px 0px;"></div>
+<div >
+  <input id="H" class="easyui-slider" value="12" style="width:300px" >
+</div>
+<div style="margin:15px 0px;"></div>
+<div>
+  <input id="S" class="easyui-slider" value="12" style="width:300px" >
+</div>
+<div style="margin:15px 0px;"></div>
+<div>
+  <input id="B" class="easyui-slider" value="12" style="width:300px" >
+</div>
+<div>H:<span id="vH">0</span>°&nbsp;&nbsp;&nbsp;&nbsp;S:<span id="vS" >0</span>%&nbsp;&nbsp;&nbsp;&nbsp;B:<span id="vB" >0</span>%</div>
+</body>
+<script type="text/javascript">
+$('#H').slider({
+   	showTip: true,
+	min:0,
+	max:360,
+	value:10,
+	tipFormatter: function(value){
+		return value+'°';
+	},
+	onChange: function(value){
+		$('#vH').html(value);
+	}
+});
+$('#S').slider({
+   	showTip: true,
+	min:0,
+	max:100,
+	value:70,
+	tipFormatter: function(value){
+		return value+'%';
+	},
+	onChange: function(value){
+		$('#vS').html(value);
+	}
+});
+$('#B').slider({
+   	showTip: true,
+	min:0,
+	max:100,
+	value:70,
+	tipFormatter: function(value){
+		return value+'%';
+	},
+	onChange: function(value){
+		$('#vB').html(value);
+	}
+});
+</script>
+</html>
