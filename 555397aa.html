@@ -42,14 +42,12 @@
     <button class="button button-small button-royal" id="send2uart"> Uart </button>
   </div>
   <div>
-    <div>H:<input type="text" placeholder="0-360" id="H">
+    <div> H:
+      <input type="range" placeholder="0-360" id="H" min="0" max="360" step="1" value="120">
       S:
-      <input type="text" placeholder="0-100" id="S">
+      <input type="range" placeholder="0-100" id="S" min="0" max="100" step="1" value="100">
       B:
-      <input type="text" placeholder="0-100" id="B">
-    </div>
-    <div>
-      <button class="button button-small button-royal" id="HSB"> HSB </button>
+      <input type="range" placeholder="0-100" id="B" min="0" max="100" step="1" value="100">
     </div>
   </div>
   <div class="button-bar"> <a class="button" style="background:red; color:white" id="led_red">Red</a> <a class="button" style="background:green; color:white" id="led_green">Green</a> <a class="button" style="background:blue; color:white" id="led_blue">Blue</a> </div>
@@ -153,7 +151,9 @@
             client.publish(topic, commond);
 		}
 		//改变灯的颜色
-		document.querySelector('#HSB').addEventListener('click', HSB);
+		document.querySelector('#H').addEventListener('change', HSB);
+		document.querySelector('#S').addEventListener('change', HSB);
+		document.querySelector('#B').addEventListener('change', HSB);
 
         function led_on() {
             var topic = device_id+'/in/write';
