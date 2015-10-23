@@ -70,13 +70,14 @@ a {
     </tr>
     <tr>
       <td><a id="led_on"><img src="image/menu/help.jpg"></a></td>
-      <td><a id="led_off"><img src="image/menu/switch.jpg"></a></td>
+      <td><a id="led_switch"><img src="image/menu/switch.jpg"></a></td>
     </tr>
   </table>
 </div>
 </body>
 <script src="http://api.easylink.io/assets/js/mqttws31.js"></script>
 <script>
+	var switch_btn_off=true;
     // 从url中获取某个参数的值
     function getParameterByName(name) {
         var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
@@ -214,13 +215,22 @@ a {
         // document.querySelector('#led_on').addEventListener('touchstart', led_on);
         document.querySelector('#led_on').addEventListener('click', led_on);
 
-        function led_off() {
+        function led_switch() {
             var topic = device_id+'/in/write';
-            var commond = '{"rgbled_switch":false}';
+            var commond;
+			
+			if(switch_btn_off){
+				commond = '{"rgbled_switch":true}';
+				switch_btn_off=false;
+			}else{
+				commond = '{"rgbled_switch":false}';
+				switch_btn_off=true;
+			}
+			
             client.publish(topic, commond);
         }
         // document.querySelector('#led_off').addEventListener('touchstart', led_off);
-        document.querySelector('#led_off').addEventListener('click', led_off);
+        document.querySelector('#led_switch').addEventListener('click', led_switch);
 
         function led_red() {
             var topic = device_id+'/in/write';
