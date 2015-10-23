@@ -65,11 +65,11 @@ a {
 <div class="bar-footer" style="bottom:0;position:absolute;width:100%">
   <table class="control">
     <tr>
-      <td><a id="led_red"><img src="image/menu/menu.jpg"></a></td>
+      <td><a id="led_blue"><img src="image/menu/menu.jpg"></a></td>
       <td><a id="led_green"><img src="image/menu/file.jpg"></a></td>
     </tr>
     <tr>
-      <td><a id="led_on"><img src="image/menu/help.jpg"></a></td>
+      <td><a id="led_red"><img src="image/menu/help.jpg"></a></td>
       <td><a id="led_switch"><img src="image/menu/switch.jpg"></a></td>
     </tr>
   </table>
@@ -254,11 +254,11 @@ a {
             client.publish(topic, commond);
         }
         // document.querySelector('#led_blue').addEventListener('touchstart', led_blue);
-        //document.querySelector('#led_blue').addEventListener('click', led_blue);
+        document.querySelector('#led_blue').addEventListener('click', led_blue);
 		
 		 function led_start() {
             var topic = device_id+'/in/write';
-            var commond = '{"rgbled_switch":false}';
+            var commond = '{"rgbled_switch":true}';
             client.publish(topic, commond);
         }
         //document.querySelector('#led_off').addEventListener('touchstart', led_off);
@@ -266,7 +266,7 @@ a {
 
         function led_pause() {
             var topic = device_id+'/in/write';
-            var commond = '{"rgbled_switch":true,"rgbled_hues":0, "rgbled_saturation":100, "rgbled_brightness":100}'; 
+            var commond = '{"rgbled_switch":true,"rgbled_hues":20, "rgbled_saturation":80, "rgbled_brightness":100}'; 
             client.publish(topic, commond);
         }
         //document.querySelector('#led_red').addEventListener('touchstart', led_red);
@@ -274,7 +274,7 @@ a {
 
         function led_stop() {
             var topic = device_id+'/in/write';
-            var commond = '{"rgbled_switch":true,"rgbled_hues":120, "rgbled_saturation":100, "rgbled_brightness":100}'; 
+            var commond = '{"rgbled_switch":false}'; 
             client.publish(topic, commond);
         }
         //document.querySelector('#led_green').addEventListener('touchstart', led_green);
