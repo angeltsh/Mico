@@ -164,7 +164,7 @@ a{
         }
 
         // 串口数据发送部分
-        var inputMessage = document.getElementById('message');
+        //var inputMessage = document.getElementById('message');
         // 将消息发送到指定的通道
         function send2uart() {
             if ( inputMessage.value.length == 0 ) return;
@@ -175,20 +175,20 @@ a{
             inputMessage.value = '';
         }
         // document.querySelector('#send2uart').addEventListener('touchstart', send2uart);
-        document.querySelector('#send2uart').addEventListener('click', send2uart);
+        //document.querySelector('#send2uart').addEventListener('click', send2uart);
 		
-		function HSB() {
-			var topic = device_id+'/in/write';
-			var H=$("#H").val();
-			var S=$("#S").val();
-			var B=$("#B").val();
-            var commond = '{"rgbled_switch":true,"rgbled_hues":'+H+', "rgbled_saturation":'+S+', "rgbled_brightness":'+B+'}'; 
-            client.publish(topic, commond);
-		}
+		//function HSB() {
+//			var topic = device_id+'/in/write';
+//			var H=$("#H").val();
+//			var S=$("#S").val();
+//			var B=$("#B").val();
+//            var commond = '{"rgbled_switch":true,"rgbled_hues":'+H+', "rgbled_saturation":'+S+', "rgbled_brightness":'+B+'}'; 
+//            client.publish(topic, commond);
+//		}
 		//改变灯的颜色
-		document.querySelector('#H').addEventListener('change', HSB);
-		document.querySelector('#S').addEventListener('change', HSB);
-		document.querySelector('#B').addEventListener('change', HSB);
+		//document.querySelector('#H').addEventListener('change', HSB);
+		//document.querySelector('#S').addEventListener('change', HSB);
+		//document.querySelector('#B').addEventListener('change', HSB);
 
         function led_on() {
             var topic = device_id+'/in/write';
@@ -228,7 +228,7 @@ a{
             client.publish(topic, commond);
         }
         // document.querySelector('#led_blue').addEventListener('touchstart', led_blue);
-        document.querySelector('#led_blue').addEventListener('click', led_blue);
+        //document.querySelector('#led_blue').addEventListener('click', led_blue);
 		
 		 function led_start() {
             var topic = device_id+'/in/write';
