@@ -18,9 +18,6 @@
 	width:38%;
 	padding:10% 1%;
 }
-.main .control .menu img {
-	width:50px;
-}
 .main .control .menu>div {
 	text-align:center;
 }
@@ -40,8 +37,8 @@
 <div class="main">
   <div class="control" >
     <div class="menu">
-     <!-- <div><a><img src="./image/menu/start.png" ></a></div>
-      <div><a style="margin-right:15px;"><img src="./image/menu/pause.png"  ></a><a><img src="./image/menu/stop.png" ></a></div>-->
+      <div><a><img src="image/menu/start.png" ></a></div>
+      <div><a style="margin-right:15px;"><img src="image/menu/pause.png"  ></a><a><img src="image/menu/stop.png" ></a></div>
     </div>
     <div class="info">
       <div>tests</div>
@@ -57,8 +54,8 @@
     <div class="clear"></div>
   </div>
   <div class="footer" style="bottom:0;position:absolute;width:100%">
-    <div> <a id="led_red"><img src="./image/menu/menu.jpg" style="width:100%;" ></a> <a id="led_green"><img src="./image/menu/file.jpg" style="width:100%;" ></a> </div>
-    <div> <a id="led_on"><img src="./image/menu/help.jpg" style="width:100%;" ></a> <a id="led_off"><img src="./image/menu/switch.jpg" style="width:100%;"></a> </div>
+    <div> <a id="led_red"><img src="image/menu/menu.jpg" style="width:100%;" ></a> <a id="led_green"><img src="image/menu/file.jpg" style="width:100%;" ></a> </div>
+    <div> <a id="led_on"><img src="image/menu/help.jpg" style="width:100%;" ></a> <a id="led_off"><img src="image/menu/switch.jpg" style="width:100%;"></a> </div>
   </div>
 </div>
 </body>
@@ -169,39 +166,39 @@
             var commond = '{"rgbled_switch":true}';
             client.publish(topic, commond);
         }
-        document.querySelector('#led_on').addEventListener('touchstart', led_on);
-        //document.querySelector('#led_on').addEventListener('click', led_on);
+        //document.querySelector('#led_on').addEventListener('touchstart', led_on);
+        document.querySelector('#led_on').addEventListener('click', led_on);
 
         function led_off() {
             var topic = device_id+'/in/write';
             var commond = '{"rgbled_switch":false}';
             client.publish(topic, commond);
         }
-        document.querySelector('#led_off').addEventListener('touchstart', led_off);
-        //document.querySelector('#led_off').addEventListener('click', led_off);
+        //document.querySelector('#led_off').addEventListener('touchstart', led_off);
+        document.querySelector('#led_off').addEventListener('click', led_off);
 
         function led_red() {
             var topic = device_id+'/in/write';
             var commond = '{"rgbled_switch":true,"rgbled_hues":0, "rgbled_saturation":100, "rgbled_brightness":100}'; 
             client.publish(topic, commond);
         }
-        document.querySelector('#led_red').addEventListener('touchstart', led_red);
-        //document.querySelector('#led_red').addEventListener('click', led_red);
+        //document.querySelector('#led_red').addEventListener('touchstart', led_red);
+        document.querySelector('#led_red').addEventListener('click', led_red);
 
         function led_green() {
             var topic = device_id+'/in/write';
             var commond = '{"rgbled_switch":true,"rgbled_hues":120, "rgbled_saturation":100, "rgbled_brightness":100}'; 
             client.publish(topic, commond);
         }
-        document.querySelector('#led_green').addEventListener('touchstart', led_green);
-        //document.querySelector('#led_green').addEventListener('click', led_green);
+        //document.querySelector('#led_green').addEventListener('touchstart', led_green);
+        document.querySelector('#led_green').addEventListener('click', led_green);
 
         //function led_blue() {
 //            var topic = device_id+'/in/write';
 //            var commond = '{"rgbled_switch":true,"rgbled_hues":240, "rgbled_saturation":100, "rgbled_brightness":100}'; 
 //            client.publish(topic, commond);
 //        }
-//        document.querySelector('#led_blue').addEventListener('touchstart', led_blue);
+//       // document.querySelector('#led_blue').addEventListener('touchstart', led_blue);
         //document.querySelector('#led_blue').addEventListener('click', led_blue);
     }
 
