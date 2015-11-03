@@ -56,9 +56,9 @@ a {
   <tr style="height:300px;">
     <td style="padding-top:15px;"><a id="led_start"><img src="image/menu/start.png" ></a><br/>
       <a id="led_pause" style="margin-right:15px;"><img src="image/menu/pause.png"  ></a><a id="led_stop"><img src="image/menu/stop.png" ></a></td>
-    <td><p>左头：<span id="tempid"></span>℃</p>
-      <p>右头：<span id="tempid"></span>℃</p>
-      <p>底板： <span id="tempid"></span>℃</p>
+    <td><p>左头：<span id="tempid1"></span>℃</p>
+      <p>右头：<span id="tempid2"></span>℃</p>
+      <p>底板： <span id="tempid3"></span>℃</p>
       <p>时间： 00:00:00</p></td>
   </tr>
 </table>
@@ -156,13 +156,18 @@ a {
             // }
             // msgindex++;
             // console.log('设备上报:' +  message.payloadString);
-            msgjson = $.parseJSON(message.payloadString);
+            //msgjson = $.parseJSON(message.payloadString);
             // console.log('温度 ' +  msgjson.dht11_temperature);
-            var tempval = msgjson.dht11_temperature;
+            //var tempval = msgjson.dht11_temperature;
+            
+            
+            
             // console.log('温度2 ' +  tempval);
-            if("undefined" != typeof(tempval)){
+            //if("undefined" != typeof(tempval)){
                 // 显示温度
-                $("#tempid").text(tempval+"℃");
+                $("#tempid1").text(message.payloadString+"℃");
+                $("#tempid2").text(message.payloadString+"℃");
+                $("#tempid3").text(message.payloadString+"℃");
                 // 显示湿度
                 //$("#humiid").text(msgjson.dht11_humidity+'%');
                 // 温度超过29则红灯亮，20-29之间则绿灯亮，低于20黄灯亮
@@ -176,8 +181,8 @@ a {
 //                    led_yellow();
 //                    $("#rgbimgid").attr("src", "./image/02-yellow.svg");
 //                }
-            }
-            console.log(message.topic + ': ' +  message.payloadString);
+            //}
+            //console.log(message.topic + ': ' +  message.payloadString);
         }
 
         // 串口数据发送部分
