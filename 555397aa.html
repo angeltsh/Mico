@@ -51,7 +51,7 @@ a {
 <body>
 <div id="debug" style="display:none;">
   <!--通信交互区域，保留debug标签-->
-</div>
+</div> <!--
 <table class="menu">
   <tr style="height:300px;">
     <td style="padding-top:15px;"><a id="led_start"><img src="image/menu/start.png" ></a><br/>
@@ -61,7 +61,7 @@ a {
       <p>底板： <span id="tempid3"></span>℃</p>
       <p>时间： 00:00:00</p></td>
   </tr>
-</table>
+</table>-->
 <div class="bar-footer" style="bottom:0;position:absolute;width:100%">
   <table class="control">
     <tr>
@@ -149,7 +149,7 @@ a {
         }
         // 消息到达
         function onMessageArrived(message) {
-			 // console.log(message.topic + ': ' +  message.payloadString);
+	     console.log(message.topic + ': ' +  message.payloadString);
             // if(msgindex > 12 ){
             //     msgindex =1;
             //     document.getElementById('debug').innerHTML = "";
@@ -165,9 +165,9 @@ a {
             // console.log('温度2 ' +  tempval);
             //if("undefined" != typeof(tempval)){
                 // 显示温度
-                $("#tempid1").text(message+"℃");
-                $("#tempid2").text(message+"℃");
-                $("#tempid3").text(message+"℃");
+                //$("#tempid1").text(message+"℃");
+               // $("#tempid2").text(message+"℃");
+                //$("#tempid3").text(message+"℃");
                 // 显示湿度
                 //$("#humiid").text(msgjson.dht11_humidity+'%');
                 // 温度超过29则红灯亮，20-29之间则绿灯亮，低于20黄灯亮
