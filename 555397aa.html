@@ -136,7 +136,7 @@
         function send2uart() {
             if ( inputMessage.value.length == 0 ) return;
             var topic = device_id+'/in/write';
-            var commond = '{"11":"' + inputMessage.value + '"}';
+            var commond = '{"1111":"' + inputMessage.value + '"}';
             client.publish(topic, commond);
             console.log(inputMessage.value);
             inputMessage.value = '';
