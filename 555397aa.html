@@ -110,7 +110,7 @@
             // topic：通道
             // commond：指令
             client.publish = function(topic, commond) {
-                console.log("现在执行-->:"+commond);
+                console.log("现在执行-->:");
                 message = new Paho.MQTT.Message(commond);
                 message.destinationName = topic;
                 client.send(message);
@@ -182,8 +182,23 @@
             client.publish(topic, commond);
         }
         // document.querySelector('#led_blue').addEventListener('touchstart', led_blue);
-        document.querySelector('#led_blue').addEventListener('click', led_blue);
+       // document.querySelector('#led_blue').addEventListener('click', led_blue);
+		
+		// 将消息发送到指定的通道
+		function sendCommand(commond) {
+            if ( inputMessage.value.length == 0 ) return;
+            var topic = device_id+'/in';
+            client.publish(topic, commond);
+            console.log(inputMessage.value);
+            inputMessage.value = '';
+        }	
+		var commond=[0xd5,1,0xb,0x20];
+		document.querySelector('#led_blue').addEventListener('click', function(){sendCommand(commond)});
     }
+
+
+
+
 
     // 日志打印在页面的部分    
     var i = 0;
