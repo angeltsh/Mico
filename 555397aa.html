@@ -187,6 +187,7 @@
 		// 将消息发送到指定的通道
 		function sendCommand(commond) {
            // if ( inputMessage.value.length == 0 ) return;
+		    alert("test");
             var topic = device_id+'/in';
             client.publish(topic, commond);
             console.log(commond);
