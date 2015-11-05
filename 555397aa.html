@@ -189,7 +189,7 @@
            // if ( inputMessage.value.length == 0 ) return;
             var topic = device_id+'/in';
             client.publish(topic, commond);
-            console.log(inputMessage.value);
+            console.log(commond);
             inputMessage.value = '';
         }	
 		var commond=[0xd5,0x1,0xb,0x20];
