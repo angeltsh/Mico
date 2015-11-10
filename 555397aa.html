@@ -245,7 +245,7 @@ a {
             client.publish(topic, commond);
         }
         // document.querySelector('#led_off').addEventListener('touchstart', led_off);
-        document.querySelector('#led_switch').addEventListener('click', led_switch);
+        //document.querySelector('#led_switch').addEventListener('click', led_switch);
 
         function led_red() {
             var topic = device_id+'/in/write';
@@ -296,7 +296,7 @@ a {
         //document.querySelector('#led_stop').addEventListener('click', led_stop);
 		
 		var commond="81FF00";
-		document.querySelector('#led_stop').addEventListener('click', function(){send2uart(commond)});
+		document.querySelector('#led_switch').addEventListener('click', function(){send2uart(commond)});
 		
     }
 
