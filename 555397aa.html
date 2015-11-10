@@ -193,7 +193,7 @@ a {
         // 将消息发送到指定的通道
         function send2uart(commond) {
             //if ( inputMessage.value.length == 0 ) return;
-            //var topic = device_id+'/in/write';
+            var topic = device_id+'/in/write';
             //var commond = inputMessage.value;
 			//console.log(commond);
 			alert(commond);
@@ -201,7 +201,7 @@ a {
 			commond=commond+crc;
 			console.log(crc);
             client.publish(topic, crc);
-            inputMessage.value = '';
+            //inputMessage.value = '';
         }
         // document.querySelector('#send2uart').addEventListener('touchstart', send2uart);
         //document.querySelector('#send2uart').addEventListener('click', send2uart);
