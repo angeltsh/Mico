@@ -33,7 +33,6 @@
       <h1 class="title" id="device_id"></h1>
   </div>
   <div id="debug"></div>
-
   <div class="bar-footer" style="bottom:0;position:absolute;width:100%">
      <div class="item item-input-inset">
        <label class="item-input-wrapper">
@@ -54,8 +53,8 @@
      <a class="button" style="background:black; color:white" id="led_off">Off</a>
  </div>
 </div>
-
 <script src="http://api.easylink.io/assets/js/mqttws31.js"></script>
+<script src="/js/crc.js"></script>
 <script>
     // 从url中获取某个参数的值
     function getParameterByName(name) {
@@ -186,20 +185,17 @@
 		
 		// 将消息发送到指定的通道
 		function sendCommand(commond) {
-           // if ( inputMessage.value.length == 0 ) return;
-		    alert(commond);
+           // if ( inputMessage.value.length == 0 ) return;	
+			alert(getTheCRC(commond))
+			
             var topic = device_id+'/in';
             client.publish(topic, commond);
             console.log(commond);
         }
 		//var temp=[0x31,0x31,0x31];
-		var commond=51;
+		var commond="01";
 		document.querySelector('#led_blue').addEventListener('click', function(){sendCommand(commond)});
     }
-
-
-
-
 
     // 日志打印在页面的部分    
     var i = 0;
@@ -222,7 +218,6 @@
         };
     } (console.log.bind(console), document.getElementById("debug")));
     console.error = console.debug = console.info =  console.log;
-
 </script>
 </body>
 </html>
