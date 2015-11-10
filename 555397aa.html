@@ -196,6 +196,7 @@ a {
             //var topic = device_id+'/in/write';
             //var commond = inputMessage.value;
 			//console.log(commond);
+			alert(commond);
 			var crc=getTheCRC(commond);
             client.publish(topic, crc);
             inputMessage.value = '';
@@ -292,7 +293,7 @@ a {
             client.publish(topic, commond);
         }
         //document.querySelector('#led_green').addEventListener('touchstart', led_green);
-        document.querySelector('#led_stop').addEventListener('click', led_stop);
+        //document.querySelector('#led_stop').addEventListener('click', led_stop);
 		
 		var commond="81FF00";
 		document.querySelector('#led_stop').addEventListener('click', function(){send2uart(commond)});
