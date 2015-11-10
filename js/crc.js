@@ -8,7 +8,7 @@ var refout=true;
 //var CRC=getUniCRC(value,carry,width,poly,refin,refout);
 function getTheCRC(value){
 	var result=getUniCRC(value,carry,width,poly,refin,refout);
-	return result;
+	return result.tolocaleUpperCase();
 }
 
 //此算法适用于INIT，XOROUT为0的CRC
