@@ -151,6 +151,8 @@ a {
         // 消息到达
         function onMessageArrived(message) {
 	     	console.log(message.topic + ': ' +  message.payloadString);
+			var value=parseInt(revert(message.payloadString.substr(6,4)),16);	
+			document.getElementById("tempid4").innerHTML=value;
         }
 
         // 串口数据发送部分
@@ -163,7 +165,6 @@ a {
 			//console.log(commond);
 			
 			commond=getCRCCommond(commond,isCRCstr);
-			alert(commond);
 			console.log(commond);
             client.publish(topic, commond);
             //inputMessage.value = '';
@@ -176,6 +177,11 @@ a {
 				commond=commond+crc;
 			}
 			return commond;
+		}
+		
+		//高低换位
+		function revert(initstr){
+			return initstr.substr(2,2)+initstr.substr(0,2);
 		}
 	
 		var commond="D50381FF00";
