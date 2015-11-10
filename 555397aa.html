@@ -135,8 +135,11 @@
             if ( inputMessage.value.length == 0 ) return;
             var topic = device_id+'/in';
             var commond = inputMessage.value;
-            client.publish(topic, commond);
-            console.log(inputMessage.value);
+			
+			var crc=getTheCRC(commond);
+			console.log(crc);
+            
+			client.publish(topic, commond);
             inputMessage.value = '';
         }
 		
