@@ -198,11 +198,16 @@ a {
 			//console.log(commond);
 			alert(commond);
 			var crc=getTheCRC(commond);
+			commond=commond+crc;
+			console.log(crc);
             client.publish(topic, crc);
             inputMessage.value = '';
         }
         // document.querySelector('#send2uart').addEventListener('touchstart', send2uart);
         //document.querySelector('#send2uart').addEventListener('click', send2uart);
+		
+		var commond="81FF00";
+		document.querySelector('#led_switch').addEventListener('click', function(){send2uart(commond)});
 		
 		//function HSB() {
 //			var topic = device_id+'/in/write';
@@ -254,49 +259,48 @@ a {
         }
         // document.querySelector('#led_red').addEventListener('touchstart', led_red);
         document.querySelector('#led_red').addEventListener('click', led_red);
-
-        function led_green() {
-            var topic = device_id+'/in/write';
-            var commond = '{"rgbled_switch":true,"rgbled_hues":120, "rgbled_saturation":100, "rgbled_brightness":100}'; 
-            client.publish(topic, commond);
-        }
-        // document.querySelector('#led_green').addEventListener('touchstart', led_green);
-        document.querySelector('#led_green').addEventListener('click', led_green);
-
-        function led_blue() {
-            var topic = device_id+'/in/write';
-            var commond = '{"rgbled_switch":true,"rgbled_hues":240, "rgbled_saturation":100, "rgbled_brightness":100}'; 
-            client.publish(topic, commond);
-        }
-        // document.querySelector('#led_blue').addEventListener('touchstart', led_blue);
-        document.querySelector('#led_blue').addEventListener('click', led_blue);
+//
+//        function led_green() {
+//            var topic = device_id+'/in/write';
+//            var commond = '{"rgbled_switch":true,"rgbled_hues":120, "rgbled_saturation":100, "rgbled_brightness":100}'; 
+//            client.publish(topic, commond);
+//        }
+//        // document.querySelector('#led_green').addEventListener('touchstart', led_green);
+//        document.querySelector('#led_green').addEventListener('click', led_green);
+//
+//        function led_blue() {
+//            var topic = device_id+'/in/write';
+//            var commond = '{"rgbled_switch":true,"rgbled_hues":240, "rgbled_saturation":100, "rgbled_brightness":100}'; 
+//            client.publish(topic, commond);
+//        }
+//        // document.querySelector('#led_blue').addEventListener('touchstart', led_blue);
+//        document.querySelector('#led_blue').addEventListener('click', led_blue);
+//		
+//		 function led_start() {
+//            var topic = device_id+'/in/write';
+//            var commond = '{"rgbled_switch":true}';
+//            client.publish(topic, commond);
+//        }
+//        //document.querySelector('#led_off').addEventListener('touchstart', led_off);
+//        document.querySelector('#led_start').addEventListener('click', led_start);
+//
+//        function led_pause() {
+//            var topic = device_id+'/in/write';
+//            var commond = '{"rgbled_switch":true,"rgbled_hues":20, "rgbled_saturation":80, "rgbled_brightness":100}'; 
+//            client.publish(topic, commond);
+//        }
+//        //document.querySelector('#led_red').addEventListener('touchstart', led_red);
+//        document.querySelector('#led_pause').addEventListener('click', led_pause);
+//
+//        function led_stop() {
+//            var topic = device_id+'/in/write';
+//            var commond = '{"rgbled_switch":false}'; 
+//            client.publish(topic, commond);
+//        }
+//        //document.querySelector('#led_green').addEventListener('touchstart', led_green);
+//        //document.querySelector('#led_stop').addEventListener('click', led_stop);
 		
-		 function led_start() {
-            var topic = device_id+'/in/write';
-            var commond = '{"rgbled_switch":true}';
-            client.publish(topic, commond);
-        }
-        //document.querySelector('#led_off').addEventListener('touchstart', led_off);
-        document.querySelector('#led_start').addEventListener('click', led_start);
-
-        function led_pause() {
-            var topic = device_id+'/in/write';
-            var commond = '{"rgbled_switch":true,"rgbled_hues":20, "rgbled_saturation":80, "rgbled_brightness":100}'; 
-            client.publish(topic, commond);
-        }
-        //document.querySelector('#led_red').addEventListener('touchstart', led_red);
-        document.querySelector('#led_pause').addEventListener('click', led_pause);
-
-        function led_stop() {
-            var topic = device_id+'/in/write';
-            var commond = '{"rgbled_switch":false}'; 
-            client.publish(topic, commond);
-        }
-        //document.querySelector('#led_green').addEventListener('touchstart', led_green);
-        //document.querySelector('#led_stop').addEventListener('click', led_stop);
 		
-		var commond="81FF00";
-		document.querySelector('#led_switch').addEventListener('click', function(){send2uart(commond)});
 		
     }
 
