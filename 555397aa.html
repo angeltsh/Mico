@@ -199,7 +199,8 @@ a {
 			alert(commond);
 			var crc=getTheCRC(commond);
 			commond=commond+crc;
-			console.log(crc);
+			alert(commond);
+			console.log(commond);
             client.publish(topic, crc);
             //inputMessage.value = '';
         }
