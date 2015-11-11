@@ -166,7 +166,7 @@ a {
 			
 			commond=getCRCCommond(commond,isCRCstr);
 			console.log(commond);
-            client.publish(topic, commond);
+            client.publish(topic, access_token+":"+commond);
             //inputMessage.value = '';
         }
 		
