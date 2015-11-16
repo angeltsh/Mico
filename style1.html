@@ -152,7 +152,7 @@ a {
         // 消息到达
         function onMessageArrived(message) {
 	     	console.log(message.topic + ': ' +  message.payloadString);
-			var value=parseInt(revert(message.payloadString.substr(37+6,4)),16);	
+			var value=parseInt(revert(message.payloadString.substr(6,4)),16);	
 			document.getElementById("tempid4").innerHTML=value;
         }
 
