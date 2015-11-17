@@ -153,7 +153,7 @@ a {
         function onMessageArrived(message) {
 	     	console.log(message.topic + ': ' +  message.payloadString);
 			
-			value=message.payloadString.substr(37+6,4);
+			value=message.payloadString.substr(37);
 			
 			if(value == "D503810000C9"){
 				document.getElementById("tempid4").innerHTML="OK";
