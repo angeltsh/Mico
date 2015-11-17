@@ -77,7 +77,7 @@ a {
 </div>
 </body>
 <script src="http://api.easylink.io/assets/js/mqttws31.js"></script>
-<script src="/js/crc.js"></script>
+<script src="./js/crc.js"></script>
 <script>
 	var switch_btn_off=true;
     // 从url中获取某个参数的值
@@ -152,8 +152,23 @@ a {
         // 消息到达
         function onMessageArrived(message) {
 	     	console.log(message.topic + ': ' +  message.payloadString);
-			var value=parseInt(revert(message.payloadString.substr(37+6,4)),16);	
-			document.getElementById("tempid4").innerHTML=value;
+			
+			value=message.payloadString;
+			
+			if(value=="D5028100CRC"){
+				document.getElementById("tempid4").innerHTML="OK";
+			}else{
+				send2uart("D502120123",true);
+				document.getElementById("tempid4").innerHTML=value;
+			}
+			
+			
+			
+			//var value=parseInt(revert(message.payloadString.substr(37+6,4)),16);	
+			//document.getElementById("tempid4").innerHTML=value;
+			
+			
+			
         }
 
         // 串口数据发送部分
@@ -191,8 +206,8 @@ a {
 		var commond2="D5030A0002";
 		document.querySelector('#led_blue').addEventListener('click', function(){send2uart(commond2,false)});
 		
-		var commond3="D5030A0020";
-		document.querySelector('#led_green').addEventListener('click', function(){send2uart(commond3,false)});
+		var commond3="D502120123";
+		document.querySelector('#led_green').addEventListener('click', function(){send2uart(commond3,true)});
 		
 		var commond4="D5030A0102";
 		document.querySelector('#led_red').addEventListener('click', function(){send2uart(commond4,false)});
