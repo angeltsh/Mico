@@ -155,7 +155,7 @@ a {
 			
 			value=message.payloadString;
 			
-			if(value=="D5028100CRC"){
+			if(value == getCRCCommond("D5028100",false)){
 				document.getElementById("tempid4").innerHTML="OK";
 			}else{
 				send2uart("D50212007D",true);
