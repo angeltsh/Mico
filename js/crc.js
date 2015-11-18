@@ -5,6 +5,27 @@ var width=8;
 var refin=true;
 var refout=true;
 
+//获取文件名称
+function getFileName(value){
+	value=value.substr(2*3,(parseInt(value.substr(2*1,2),16)-1));
+	var fileName="";
+	for(var i=0;i<value.length;i=i+2){
+		fileName+=String.fromCharCode(parseInt(value.substr(i,2),16));
+	}
+	return fileName;
+}
+
+//文件名称转换为CRC
+function sendFileName(fileName){
+	fileName=fileName+".x3g";
+	//获取长度
+	var result="D5"+getFormatNum(fileName.length+2,2,16)+"10";
+	//文件名UTF-8编码十六进制
+	result+="";
+	result+="00";
+	return getTheCRC(commond.substr(4));
+}
+
 //var CRC=getUniCRC(value,carry,width,poly,refin,refout);
 function getTheCRC(value){
 	var result=getUniCRC(value,carry,width,poly,refin,refout);
@@ -12,6 +33,10 @@ function getTheCRC(value){
 }
 
 //此算法适用于INIT，XOROUT为0的CRC
+//value:待计算进制字符串
+//carry:进制
+//width：CRC宽度
+//poly:CRC二项式二进制字符串
 function getUniCRC(value,carry,width,poly,refin,refout){
 	var m=getZero(width);
 	if(value.length<2){
@@ -70,7 +95,17 @@ function getRevert(init2,carry,refin){
 
 //规范数字格式
 function zfill(num, size) {
-	var num2str=num.toString(2);
+	 return getFormatNum(num,size,2);
+}
+/**
+* 规范格式
+* num: 十进制数值
+* size: 截取长度
+* carray: 进制
+* @return: 返回进制字符串
+*/
+function getFormatNum(num,size,carry){
+	var num2str=num.toString(carry);
     var s = "00000000000000000000000000000000000" + num2str;
     return s.substr(s.length-size);
 }

@@ -8,7 +8,7 @@
 <script src="./js/jquery.mobile-1.4.5.min.js"></script>
 <script src="./js/crc.js"></script>
 <script>
-alert("aaaa".substr(0));
+
 //组合CRC的指令
 function getCRCCommond(commond,isCRCstr){
 	if(!isCRCstr){
@@ -17,7 +17,9 @@ function getCRCCommond(commond,isCRCstr){
 	}
 	return commond;
 }
-alert(getCRCCommond("D503810000C9",false));
+//alert(getCRCCommond("D503810000C9",false));
+var fileName=getFileName("D51081004F7267616E697A65722E7833670087");
+alert(fileName+"=="+fileName.length);
 </script>
 </head>
 <body>
