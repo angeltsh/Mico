@@ -142,7 +142,8 @@
 		//定时发送指令
 		function timedCount2(){
 			var commond=commondQueue[0];
-			alert("send:"+commond);
+			alert("send:"+typeof(commond));
+			alert(commond == "undefined");
 			if("undefined" != typeof(commond)){
 				send2uart(commond);
 			}
