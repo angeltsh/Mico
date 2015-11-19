@@ -4,15 +4,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>MiCOKit08</title>
 <link href="./css/jquery.mobile-1.4.5.min.css" rel="stylesheet">
-<script src="./js/jquery-2.1.3.js"></script>
 <script src="./js/jquery.mobile-1.4.5.min.js"></script>
-<script src="./js/crc.js"></script>
-<script>
-//测试数据
-//alert(getCRCCommond("D503810000C9",false));
-//var fileName=getFileName("D51081004F7267616E697A65722E7833670087");
-//alert(sendCRCFileName(fileName));
-</script>
+<script src="./js/jquery-2.1.3.js"></script>
 <!--自适应界面,如果出现,在某些设备出现界面偏小的话,检查一下有没有加入这句 -->
 <meta http-equiv="Content-type" name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
 </head>
@@ -58,6 +51,7 @@
 </div>
 </body>
 <script src="http://api.easylink.io/assets/js/mqttws31.js"></script>
+<script src="./js/crc.js"></script>
 <script>
 	var switch_btn_off=true;
 	var commondQueue=new Array();
@@ -103,8 +97,6 @@
         // 连接成功
         function onConnect() {
             var subtopic = device_id+'/out/#';
-			timedCount();
-			timedCount2();
             // Once a connection has been made, make a subscription and send a message.
             // 向某个通道发送指令
             // topic：通道
@@ -132,20 +124,35 @@
 			//解析命令
 			analysis(value);
         }
+		
+		/**定时发送指令*/
+		var timeer;
+		//定时添加获取指令
+		function timedCount(){
+			alert("add");
+			commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
+			commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
+			commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
+			commondQueue.push(getCRCCommond("D5010B",false));//打印状态
 			
+			//计时器
+			timeer=setTimeout("timedCount()",5000);//毫秒
+		}
+
 		//定时发送指令
+		var timeer2;
 		function timedCount2(){
 			var commond=commondQueue[0];
 			if("undefined" != typeof(commond)){
 				alert("===========");
-				 var topic = device_id+'/in';
-				console.log(commond);
-            	client.publish(topic, access_token+":"+commond);
+				send2uart(commond);
 			}
 			//计时器
 			timeer2=setTimeout("timedCount2()",500);//毫秒
-		}	
-		
+		}
+		timedCount();
+		timedCount2();
+		/**定时发送指令*/	
 		function analysis(value){
 			var commond2=commondQueue[0];
 			var v="";
@@ -190,6 +197,7 @@
         //var inputMessage = document.getElementById('message');
         // 将消息发送到指定的通道
         function send2uart(commond) {
+			alert("==========");
             var topic = device_id+'/in';
 			console.log(commond);
             client.publish(topic, access_token+":"+commond);
@@ -207,23 +215,6 @@
 		document.querySelector('#stop').addEventListener('click', function(){addCommond(getCRCCommond("D50107",false))});
  
     }
-	
-	
-	/**定时发送指令*/
-	var timeer;
-	var timeer2;
-	//定时添加获取指令
-	function timedCount(){
-		alert("add");
-		commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
-		commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
-		commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
-		commondQueue.push(getCRCCommond("D5010B",false));//打印状态
-		
-		//计时器
-		timeer=setTimeout("timedCount()",5000);//毫秒
-	}
-	/**定时发送指令*/
 	
     // 日志打印在页面的部分    
     var i = 0;
