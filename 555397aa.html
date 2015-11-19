@@ -135,10 +135,12 @@
 			
 		//定时发送指令
 		function timedCount2(){
-			alert("===========");
 			var commond=commondQueue[0];
 			if("undefined" != typeof(commond)){
-				send2uart(commond);
+				alert("===========");
+				 var topic = device_id+'/in';
+				console.log(commond);
+            	client.publish(topic, access_token+":"+commond);
 			}
 			//计时器
 			timeer2=setTimeout("timedCount2()",500);//毫秒
