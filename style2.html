@@ -60,7 +60,8 @@
 <script src="http://api.easylink.io/assets/js/mqttws31.js"></script>
 <script>
 	var switch_btn_off=true;
- 	
+	var commondQueue=new Array();
+	
 	// 从url中获取某个参数的值
     function getParameterByName(name) {
         var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
@@ -121,36 +122,6 @@
             if (responseObject.errorCode !== 0)
                 console.log("onConnectionLost:"+responseObject.errorMessage);
         }
-		
-		/**定时发送指令*/
-		var commondQueue=new Array();
-		var timeer;
-		//定时添加获取指令
-		function timedCount(){
-			alert("add");
-			commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
-			commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
-			commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
-			commondQueue.push(getCRCCommond("D5010B",false));//打印状态
-			
-			//计时器
-			timeer=setTimeout("timedCount()",5000);//毫秒
-		}
-		timedCount();
-		
-		/*var timeer2;
-		//定时发送指令
-		function timedCount2(){
-			var commond=commondQueue[0];
-			if("undefined" != typeof(commond)){
-				send2uart(commond);
-			}
-			//计时器
-			timeer2=setTimeout("timedCount2()",500);//毫秒
-		}
-		timedCount2();*/
-		
-		/**定时发送指令*/
 		
         // 消息到达
         function onMessageArrived(message) {
@@ -221,7 +192,37 @@
 		document.querySelector('#stop').addEventListener('click', function(){addCommond(getCRCCommond("D50107",false))});
  
     }
-
+	
+	
+	/**定时发送指令*/
+	var timeer;
+	//定时添加获取指令
+	function timedCount(){
+		alert("add");
+		commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
+		commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
+		commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
+		commondQueue.push(getCRCCommond("D5010B",false));//打印状态
+		
+		//计时器
+		timeer=setTimeout("timedCount()",5000);//毫秒
+	}
+	timedCount();
+	
+	var timeer2;
+	//定时发送指令
+	function timedCount2(){
+		var commond=commondQueue[0];
+		if("undefined" != typeof(commond)){
+			send2uart(commond);
+		}
+		//计时器
+		timeer2=setTimeout("timedCount2()",500);//毫秒
+	}
+	timedCount2();
+	/**定时发送指令*/
+	
+	
     // 日志打印在页面的部分    
     var i = 0;
     console.log = (function(old_funct, div_log) {
