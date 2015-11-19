@@ -134,7 +134,7 @@
 			commondQueue.push(getCRCCommond("D5010B",false));//打印状态
 			
 			//计时器
-			timeer=setTimeout("timedCount",5000);//毫秒
+			timeer=setTimeout("timedCount()",5000);//毫秒
 		}
 		timedCount();
 		
@@ -147,7 +147,7 @@
 				send2uart(commond);
 			}
 			//计时器
-			timeer=setTimeout("timedCount2",1000);//毫秒
+			timeer2=setTimeout("timedCount2()",500);//毫秒
 		}
 		timedCount2();
 		
