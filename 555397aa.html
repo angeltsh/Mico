@@ -157,10 +157,14 @@ a {
 			
 			if(value == "D503810000C9"){
 				document.getElementById("tempid4").innerHTML="OK";
+				send2uart("D50212007D",true);
 			}else{
 				send2uart("D50212007D",true);
 				document.getElementById("tempid4").innerHTML=getFileName(value);
-			}			
+			}
+			
+			
+			
 			//var value=parseInt(revert(message.payloadString.substr(37+6,4)),16);	
 			//document.getElementById("tempid4").innerHTML=value;
 			
