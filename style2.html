@@ -103,6 +103,8 @@
         // 连接成功
         function onConnect() {
             var subtopic = device_id+'/out/#';
+			timedCount();
+			timedCount2();
             // Once a connection has been made, make a subscription and send a message.
             // 向某个通道发送指令
             // topic：通道
@@ -207,11 +209,11 @@
 		//计时器
 		timeer=setTimeout("timedCount()",5000);//毫秒
 	}
-	timedCount();
 	
 	var timeer2;
 	//定时发送指令
 	function timedCount2(){
+		alert("===========");
 		var commond=commondQueue[0];
 		if("undefined" != typeof(commond)){
 			send2uart(commond);
@@ -219,9 +221,7 @@
 		//计时器
 		timeer2=setTimeout("timedCount2()",500);//毫秒
 	}
-	timedCount2();
 	/**定时发送指令*/
-	
 	
     // 日志打印在页面的部分    
     var i = 0;
