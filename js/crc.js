@@ -5,6 +5,12 @@ var width=8;
 var refin=true;
 var refout=true;
 
+
+//获取返回的CRC信息码
+function getReturnCommond(message){
+	return message.substr(37);
+}
+
 //获取文件名称
 function getFileName(value){
 	value=value.substr(2*3,(parseInt(value.substr(2*1,2),16)-1));
@@ -16,15 +22,27 @@ function getFileName(value){
 }
 
 //文件名称转换为CRC
-function sendFileName(fileName){
+function sendCRCFileName(fileName){
 	fileName=fileName+".x3g";
 	//获取长度
 	var result="D5"+getFormatNum(fileName.length+2,2,16)+"10";
 	//文件名UTF-8编码十六进制
-	result+="";
+	result+=stringToHex(fileName);
 	result+="00";
-	return getTheCRC(commond.substr(4));
+	return (result+getTheCRC(result.substr(4))).toUpperCase();
 }
+
+//字符串转十六进制编码
+function stringToHex(str){
+　　　　var val="";
+　　　　for(var i = 0; i < str.length; i++){
+　　　　　　if(val == "")
+　　　　　　　　val = str.charCodeAt(i).toString(16);
+　　　　　　else
+　　　　　　　　val += str.charCodeAt(i).toString(16);
+　　　　}
+　　　　return val.toUpperCase();
+　　}
 
 //var CRC=getUniCRC(value,carry,width,poly,refin,refout);
 function getTheCRC(value){
@@ -125,4 +143,42 @@ function getMo2(str1,str2){
 		}
 	}
 	return result;
+}
+
+//组合CRC的指令
+function getCRCCommond(commond,isCRCstr){
+	if(!isCRCstr){
+		var crc=getTheCRC(commond.substr(4));
+		commond=commond+crc;
+	}
+	return commond;
+}
+
+//高低换位
+function revert(initstr){
+	return initstr.substr(2,2)+initstr.substr(0,2);
+}
+
+
+//获取当前时间
+function getNowFormatDate() {
+    var date = new Date();
+    var seperator1 = "-";
+    var seperator2 = ":";
+    var month = date.getMonth() + 1;
+    var strDate = date.getDate();
+    if (month >= 1 && month <= 9) {
+        month = "0" + month;
+    }
+    if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+    }
+   // var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+   //        + " " + date.getHours() + seperator2 + date.getMinutes()
+   //        + seperator2 + date.getSeconds();
+			
+	var currentdate = date.getHours() + seperator2 + date.getMinutes()
+            + seperator2 + date.getSeconds();
+			
+    return currentdate;
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="ionicApp">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>MiCOKit08</title>
@@ -8,19 +8,13 @@
 <script src="./js/jquery.mobile-1.4.5.min.js"></script>
 <script src="./js/crc.js"></script>
 <script>
-
-//组合CRC的指令
-function getCRCCommond(commond,isCRCstr){
-	if(!isCRCstr){
-		var crc=getTheCRC(commond.substr(4));
-		commond=commond+crc;
-	}
-	return commond;
-}
+//测试数据
 //alert(getCRCCommond("D503810000C9",false));
-var fileName=getFileName("D51081004F7267616E697A65722E7833670087");
-alert(fileName+"=="+fileName.length);
+//var fileName=getFileName("D51081004F7267616E697A65722E7833670087");
+//alert(sendCRCFileName(fileName));
 </script>
+<!--自适应界面,如果出现,在某些设备出现界面偏小的话,检查一下有没有加入这句 -->
+<meta http-equiv="Content-type" name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
 </head>
 <body>
 <div data-role="page" id="pageone">
@@ -29,20 +23,21 @@ alert(fileName+"=="+fileName.length);
   </div>
   <div data-role="content">
     <div class="ui-grid-a">
-      <div class="ui-block-a"> <a href="#anylink" inline="true" data-role="button">开始</a> <a href="#anylink" data-role="button">暂停</a> <a href="#anylink" data-role="button">停止</a> </div>
-      <div class="ui-block-b"> 
-      	左头：℃<br/>
-        右头：℃<br/>
-        <label id="stlfile"></label>
+      <div class="ui-block-a"> <a data-role="button" id="pause">暂停/继续</a> <a data-role="button" id="stop">停止</a> </div>
+      <div class="ui-block-b"> 左头：<span id="lt"></span>℃<br/>
+        右头：<span id="rt"></span>℃<br/>
+        底板：<span id="pt"></span>℃<br/>
+        状态：<span id="printstate"></span><br/>
+        选择文件：<span id="stlfile"></span>
       </div>
     </div>
     <div data-role="collapsible" data-collapsed="true">
       <h1>文件列表</h1>
       <p>
       <ul>
-        <li>兔子.x3g</li>
-        <li>老虎.x3g</li>
-        <li>花瓶.x3g</li>
+        <!--<li><a data-role="button">兔子.x3g</a></li>
+        <li><a data-role="button">老虎.x3g</a></li>
+        <li><a data-role="button">花瓶.x3g</a></li>-->
       </ul>
       </p>
     </div>
@@ -62,11 +57,198 @@ alert(fileName+"=="+fileName.length);
 </div>
 </div>
 </body>
+<script src="http://api.easylink.io/assets/js/mqttws31.js"></script>
 <script>
-var fileName='';
-$("ul li").click(function(){
-		fileName=this.innerHTML;
-		$("#stlfile").html("选中文件："+fileName);
-	});
+	var switch_btn_off=true;
+ 	
+	// 从url中获取某个参数的值
+    function getParameterByName(name) {
+        var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+        return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    }
+    // 得到设备ID
+    var device_id = getParameterByName('device_id');
+	
+    // 如果设备ID不为空，则执行连接MQTT的操作
+    if ( device_id !== null ){
+        ez_connect(device_id);
+    }
+
+    // 连接MQTT服务
+    function ez_connect(device_id) {
+        // 获取access_token
+        // access_token是公众号的全局唯一票据，公众号调用各接口时都需使用access_token。
+        // 正常情况下access_token有效期为7200秒，重复获取将导致上次获取的access_token失效
+        var access_token = getParameterByName('access_token');
+
+		document.title=device_id;
+
+        // websocket连接
+        // wsbroker:host
+        // wsport:端口 默认1983
+        // Client-ID ： v1_web_[MAC]  //版本号_app_手机MAC(必须是12位小写)
+        var wsbroker = "api.easylink.io";  //mqtt websocket enabled broker
+        var wsport = 1983 // port for above
+        var client = new Paho.MQTT.Client(wsbroker, wsport, "v1-web-" + parseInt(Math.random() * 1000000, 12));
+
+        // 基本参数配置
+        // 连接丢失所对应的callback函数
+        client.onConnectionLost = onConnectionLost;
+        // 消息到达所对应的callback函数
+        client.onMessageArrived = onMessageArrived;
+        // 连接成功所对应的callback函数
+        client.connect({onSuccess:onConnect});
+
+        // 连接成功
+        function onConnect() {
+            var subtopic = device_id+'/out/#';
+            // Once a connection has been made, make a subscription and send a message.
+            // 向某个通道发送指令
+            // topic：通道
+            // commond：指令
+            client.publish = function(topic, commond) {
+                console.log("现在执行-->:"+commond);
+                message = new Paho.MQTT.Message(commond);
+                message.destinationName = topic;
+                client.send(message);
+            }
+            console.log("device_id:"+device_id);
+            console.log("onConnect");
+            client.subscribe(subtopic, {qos: 0});
+        }
+        // 连接丢失
+        function onConnectionLost(responseObject) {
+            if (responseObject.errorCode !== 0)
+                console.log("onConnectionLost:"+responseObject.errorMessage);
+        }
+		
+		/**定时发送指令*/
+		var commondQueue=new Array();
+		var timeer;
+		//定时添加获取指令
+		function timedCount(){
+			commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
+			commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
+			commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
+			commondQueue.push(getCRCCommond("D5010B",false));//打印状态
+			
+			//计时器
+			timeer=setTimeout("timedCount()",5000);//毫秒
+		}
+		timedCount();
+		
+		var timeer2;
+		//定时发送指令
+		function timedCount2(){
+			var commond=commondQueue[0];
+			if("undefined" != typeof(commond)){
+				send2uart(commond);
+			}
+			//计时器
+			timeer=setTimeout("timedCount2()",1000);//毫秒
+		}
+		timedCount2();
+		
+		/**定时发送指令*/
+		
+        // 消息到达
+        function onMessageArrived(message) {
+	     	console.log(message.topic + ': ' +  message.payloadString);	
+			value=getReturnCommond(message.payloadString);		
+			//解析命令
+			analysis(value);
+        }
+		
+		function analysis(value){
+			var commond=commondQueue[0];
+			var v="";
+			switch (commond) {
+				case getCRCCommond("D5030A0102",false)://左头
+					v= parseInt(revert(value.substr(6,4)),16);
+					$("#lt").html(v);
+					commondQueue.shift();
+					break;
+				case getCRCCommond("D5030A0002",false)://右头
+					v= parseInt(revert(value.substr(6,4)),16);
+					$("#rt").html(v);
+					commondQueue.shift();
+					break;
+				case getCRCCommond("D5030A001E",false)://底板
+					v= parseInt(revert(value.substr(6,4)),16);
+					$("#pt").html(v);
+					commondQueue.shift();
+					break;
+					
+				case getCRCCommond("D5010B",false)://打印状态
+					v= parseInt(value.substr(6,2),16);
+					$("#printstate").html(v);
+					commondQueue.shift();
+					break;
+					
+				case getCRCCommond("D5010B",false)://获取文件
+					v= parseInt(value.substr(6,2),16);
+					$("#printstate").html(v);
+					break;
+			}
+			
+			
+			//if(value == "D503810000C9"){
+//				document.getElementById("tempid4").innerHTML="OK";
+//			}else{
+//				send2uart("D50212007D",true);
+//				document.getElementById("tempid4").innerHTML=getFileName(value);
+//			}
+			
+			//返回正确指令，删除整体指令，并执行下一条。
+			
+		}
+		
+        // 串口数据发送部分
+        //var inputMessage = document.getElementById('message');
+        // 将消息发送到指定的通道
+        function send2uart(commond) {
+            var topic = device_id+'/in';
+			console.log(commond);
+            client.publish(topic, access_token+":"+commond);
+        }
+		
+		//添加指令
+		function addCommond(commond){
+			commondQueue.push(commond);//打印状态
+		}
+	
+		//暂停
+		document.querySelector('#pause').addEventListener('click', function(){addCommond(getCRCCommond("D50108",false))});
+				
+		//停止
+		document.querySelector('#stop').addEventListener('click', function(){addCommond(getCRCCommond("D50107",false))});
+ 
+    }
+
+    // 日志打印在页面的部分    
+    var i = 0;
+    console.log = (function(old_funct, div_log) {
+        return function(text) {
+            old_funct(text);
+            var p = '';
+            if (i%2 == 0)
+                p = '<p>';
+            else
+                p = '<p class=\'gray\'>';
+            if (typeof text === "object")
+                div_log.innerHTML += p + JSON.stringify(text) + '</p>';
+            else
+                div_log.innerHTML += p + text + '</p>';
+
+            div_log.scrollTop = div_log.scrollHeight;
+            i += 1;
+        };
+    } (console.log.bind(console), document.getElementById("debug")));
+    console.error = console.debug = console.info =  console.log;
+	
+	$("ul li").click(function(){
+			var fileName=$(this).children("a").get(0).innerHTML;
+			$("#stlfile").html(fileName);
+		});
 </script>
 </html>
