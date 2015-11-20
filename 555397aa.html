@@ -170,6 +170,7 @@
 		var timeer;
 		//定时添加获取指令
 		function timedCount(){
+			alert("add");
 			commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
 			commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
 			commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
@@ -182,6 +183,7 @@
 		var timeer2;
 		function timedCount2(){
 			var commond=commondQueue[0];
+			alert("send:"+commond);
 			if("undefined" != typeof(commond)){
 				send2uart(commond);
 			}
