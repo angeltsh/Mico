@@ -190,8 +190,8 @@
 			//计时器
 			timeer2=setTimeout("timedCount2()",500);//毫秒
 		}
-		timedCount();
-		timedCount2();
+		//timedCount();
+		//timedCount2();
 		/**定时发送指令*/	
 		
         // 串口数据发送部分
@@ -199,7 +199,7 @@
         // 将消息发送到指定的通道
         function send2uart(commond) {
             var topic = device_id+'/in';
-			alert("test=====");
+
 			console.log(commond);
             client.publish(topic, access_token+":"+commond);
         }
@@ -213,7 +213,7 @@
 		document.querySelector('#pause').addEventListener('click', function(){addCommond(getCRCCommond("D50108",false))});
 				
 		//停止
-		document.querySelector('#stop').addEventListener('click', function(){addCommond(getCRCCommond("D50107",false))});
+		document.querySelector('#stop').addEventListener('click', function(){addCommond(getCRCCommond("D5030A0102",false))});
  
     }
 	
