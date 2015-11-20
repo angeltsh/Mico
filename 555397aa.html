@@ -152,7 +152,7 @@ $("ul li").click(function(){
             console.log(message.topic + ':' +  message.payloadString);
 			var value=getReturnCommond(message.payloadString);		
 			//解析命令
-			analysis(value);
+			//analysis(value);
         }
 
         // 串口数据发送部分
@@ -211,7 +211,7 @@ $("ul li").click(function(){
 			alert(v+"===");
 		}
 		
-		/**定时发送指令*/
+		/**定时发送指令
 		var timeer;
 		//定时添加获取指令
 		function timedCount(){
@@ -235,7 +235,7 @@ $("ul li").click(function(){
 		}
 		//timedCount();
 		//timedCount2();
-		/**定时发送指令*/	
+		*定时发送指令*/	
     }
 
     // 日志打印在页面的部分    
