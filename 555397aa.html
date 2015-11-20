@@ -1,86 +1,63 @@
 <!DOCTYPE html>
 <html ng-app="ionicApp">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width" />
-<title>MiCOKit08</title>
-<script src="./js/jquery-2.1.3.js"></script>
-<link href="//code.ionicframework.com/1.0.0-beta.13/css/ionic.css" rel="stylesheet">
-<style>
-#debug {
-	margin-top:44px;
-	background-color: white;
-	height: 300px;
-	overflow: scroll;
-	color: black;
-	font-size: 12px;
-}
-#debug p {
-	padding: 3px 5px;
-}
-.gray {
-	background-color: #ddd;
-}
-#debug span {
-	display: block;
-	margin-bottom: 2px;
-}
-</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width" />
+    <title>MiCOKit08</title>
+    <link href="//code.ionicframework.com/1.0.0-beta.13/css/ionic.css" rel="stylesheet">
+    <style>
+        #debug {
+            margin-top:44px;
+            background-color: white;
+            height: 300px;
+            overflow: scroll;
+            color: black;
+            font-size: 12px;
+        }
+        #debug p {
+            padding: 3px 5px;
+            word-wrap: break-word;
+        }
+        .gray {
+            background-color: #ddd;
+        }
+        #debug span {
+            display: block;
+            word-wrap: break-word;
+            margin-bottom: 2px;
+        }
+    </style>
 </head>
 <body>
-<div data-role="page" id="pageone">
-  <div data-role="header">
-    <h1>MiCOKit08</h1>
+    <div class="bar bar-header bar-assertive">
+      <h1 class="title" id="device_id"></h1>
   </div>
-  <div data-role="content">
-    <div class="ui-grid-a">
-      <div class="ui-block-a">
-        <div class="button-bar"> <a class="button" style="background:red; color:white" id="pause">pause</a> <a class="button" style="background:green; color:white" id="stop">stop</a> </div>
-        <!--<a data-role="button" id="pause">暂停/继续</a> <a data-role="button" id="stop">停止</a> -->
-      </div>
-      <div class="ui-block-b"> 左头：<span id="lt"></span>℃<br/>
-        右头：<span id="rt"></span>℃<br/>
-        底板：<span id="pt"></span>℃<br/>
-        状态：<span id="printstate"></span><br/>
-        选择文件：<span id="stlfile"></span> </div>
-    </div>
-    <div data-role="collapsible" data-collapsed="true">
-      <h1>文件列表</h1>
-      <p>
-      <ul>
-        <li><a data-role="button">兔子.x3g</a></li>
-        <li><a data-role="button">老虎.x3g</a></li>
-        <li><a data-role="button">花瓶.x3g</a></li>
-      </ul>
-      </p>
-    </div>
-  </div>
-  <div id="message">
-    <p>操作记录</p>
-    <!--倒序排列-->
-    <p>10:20:35 打印花瓶.x3g</p>
-    <p>10:21:35 暂停打印</p>
-    <p>10:25:35 停止打印</p>
-  </div>
+  <div id="debug"></div>
+
+  <div class="bar-footer" style="bottom:0;position:absolute;width:100%">
+     <div class="item item-input-inset">
+       <label class="item-input-wrapper">
+         <input type="text" placeholder="message" id="message">
+     </label>
+     <button class="button button-small button-royal" id="send2uart">
+         Uart
+     </button>
+ </div>
+
+ <div class="button-bar">
+     <a class="button" style="background:red; color:white" id="led_red">Red</a>
+     <a class="button" style="background:green; color:white" id="led_green">Green</a>
+     <a class="button" style="background:blue; color:white" id="led_blue">Blue</a>
+ </div>
+ <div class="button-bar">
+     <a class="button" style="background:white; color:black" id="led_on">On</a>
+     <a class="button" style="background:black; color:white" id="led_off">Off</a>
+ </div>
 </div>
-<div data-role="footer">
-  <center>
-    青岛尤尼科技有限公司
-  </center>
-</div>
-</div>
-<div id="debug" style="display:none;"></div>
-<script>
-$("ul li").click(function(){
-	var name=$(this).children("a").get(0).innerHTML;
-	$("#stlfile").html(name);
-});
-</script>
+
 <script src="http://api.easylink.io/assets/js/mqttws31.js"></script>
-<script src="./js/crc.js"></script>
 <script>
-   	var commondQueue=new Array();
-   	// 从url中获取某个参数的值
+    // 从url中获取某个参数的值
     function getParameterByName(name) {
         var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
         return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
@@ -149,39 +126,62 @@ $("ul li").click(function(){
         }
         // 消息到达
         function onMessageArrived(message) {
-            console.log(message.topic + ':' +  message.payloadString);
-			var value=getReturnCommond(message.payloadString);		
-			//解析命令
-			//analysis(value);
+            console.log(message.topic + ': ' +  message.payloadString);
         }
 
         // 串口数据发送部分
-        //var inputMessage = document.getElementById('message');
+        var inputMessage = document.getElementById('message');
         // 将消息发送到指定的通道
-        function send2uart(commond) {
-			alert("test");
+        function send2uart() {
+            if ( inputMessage.value.length == 0 ) return;
             var topic = device_id+'/in';
-			console.log(commond);
-            client.publish(topic, access_token+":"+commond);
+            var commond = '{"11":"' + inputMessage.value + '"}';
+            client.publish(topic, commond);
+            console.log(inputMessage.value);
+            inputMessage.value = '';
         }
-		
-		//添加指令
-		function addCommond(commond){
-			commondQueue.push(commond);//打印状态
-		}
-		
-		function test(value){
-			alert(value);
-		}
-	
-		//暂停
-		//document.querySelector('#pause').addEventListener('click', function(){addCommond(getCRCCommond("D50108",false))});
-		document.querySelector('#pause').addEventListener('click', function(){test("D50108")});
-				
-		//停止
-		//document.querySelector('#stop').addEventListener('click', function(){addCommond(getCRCCommond("D50107",false))});
-		document.querySelector('#stop').addEventListener('click', function(){test("D50107")});
+        // document.querySelector('#send2uart').addEventListener('touchstart', send2uart);
+        document.querySelector('#send2uart').addEventListener('click', send2uart);
 
+        function led_on() {
+            var topic = device_id+'/in';
+            var commond = '{"rgbled_switch":true}';
+            client.publish(topic, commond);
+        }
+        // document.querySelector('#led_on').addEventListener('touchstart', led_on);
+        document.querySelector('#led_on').addEventListener('click', led_on);
+
+        function led_off() {
+            var topic = device_id+'/in';
+            var commond = '{"rgbled_switch":false}';
+            client.publish(topic, commond);
+        }
+        // document.querySelector('#led_off').addEventListener('touchstart', led_off);
+        document.querySelector('#led_off').addEventListener('click', led_off);
+
+        function led_red() {
+            var topic = device_id+'/in';
+            var commond = '{"rgbled_switch":true,"rgbled_hues":0, "rgbled_saturation":100, "rgbled_brightness":100}'; 
+            client.publish(topic, commond);
+        }
+        // document.querySelector('#led_red').addEventListener('touchstart', led_red);
+        document.querySelector('#led_red').addEventListener('click', led_red);
+
+        function led_green() {
+            var topic = device_id+'/in';
+            var commond = '{"rgbled_switch":true,"rgbled_hues":120, "rgbled_saturation":100, "rgbled_brightness":100}'; 
+            client.publish(topic, commond);
+        }
+        // document.querySelector('#led_green').addEventListener('touchstart', led_green);
+        document.querySelector('#led_green').addEventListener('click', led_green);
+
+        function led_blue() {
+            var topic = device_id+'/in';
+            var commond = '{"rgbled_switch":true,"rgbled_hues":240, "rgbled_saturation":100, "rgbled_brightness":100}'; 
+            client.publish(topic, commond);
+        }
+        // document.querySelector('#led_blue').addEventListener('touchstart', led_blue);
+        document.querySelector('#led_blue').addEventListener('click', led_blue);
     }
 
     // 日志打印在页面的部分    
