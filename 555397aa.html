@@ -17,14 +17,12 @@
 }
 #debug p {
 	padding: 3px 5px;
-	word-wrap: break-word;
 }
 .gray {
 	background-color: #ddd;
 }
 #debug span {
 	display: block;
-	word-wrap: break-word;
 	margin-bottom: 2px;
 }
 </style>
@@ -171,14 +169,18 @@ $("ul li").click(function(){
 		function addCommond(commond){
 			commondQueue.push(commond);//打印状态
 		}
+		
+		function test(value){
+			alert(value);
+		}
 	
 		//暂停
 		//document.querySelector('#pause').addEventListener('click', function(){addCommond(getCRCCommond("D50108",false))});
-		document.querySelector('#pause').addEventListener('click', function(){send2uart(getCRCCommond("D50108",false))});
+		document.querySelector('#pause').addEventListener('click', function(){test("D50108")});
 				
 		//停止
 		//document.querySelector('#stop').addEventListener('click', function(){addCommond(getCRCCommond("D50107",false))});
-		document.querySelector('#stop').addEventListener('click', function(){send2uart(getCRCCommond("D50107",false))});
+		document.querySelector('#stop').addEventListener('click', function(){test("D50107")});
 
     }
 
