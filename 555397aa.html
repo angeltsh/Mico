@@ -1,81 +1,95 @@
 <!DOCTYPE html>
 <html ng-app="ionicApp">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width" />
-    <title>MiCOKit08</title>
-    <link href="//code.ionicframework.com/1.0.0-beta.13/css/ionic.css" rel="stylesheet">
-    <style>
-        #debug {
-            margin-top:44px;
-            background-color: white;
-            height: 300px;
-            overflow: scroll;
-            color: black;
-            font-size: 12px;
-        }
-        #debug p {
-            padding: 3px 5px;
-            word-wrap: break-word;
-        }
-        .gray {
-            background-color: #ddd;
-        }
-        #debug span {
-            display: block;
-            word-wrap: break-word;
-            margin-bottom: 2px;
-        }
-    </style>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width" />
+<title>MiCOKit08</title>
+<link href="./css/jquery.mobile-1.4.5.min.css" rel="stylesheet">
+<script src="./js/jquery-2.1.3.js"></script>
+<script src="./js/jquery.mobile-1.4.5.min.js"></script>
+<script src="./js/crc.js"></script>
+<style>
+#debug {
+	margin-top:44px;
+	background-color: white;
+	height: 300px;
+	overflow: scroll;
+	color: black;
+	font-size: 12px;
+}
+#debug p {
+	padding: 3px 5px;
+	word-wrap: break-word;
+}
+.gray {
+	background-color: #ddd;
+}
+#debug span {
+	display: block;
+	word-wrap: break-word;
+	margin-bottom: 2px;
+}
+</style>
 </head>
 <body>
-    <div class="bar bar-header bar-assertive">
-      <h1 class="title" id="device_id"></h1>
+<div data-role="page" id="pageone">
+  <div data-role="header">
+    <h1>MiCOKit08</h1>
   </div>
-  <div id="debug"></div>
-
-  <div class="bar-footer" style="bottom:0;position:absolute;width:100%">
-     <div class="item item-input-inset">
-       <label class="item-input-wrapper">
-         <input type="text" placeholder="message" id="message">
-     </label>
-     <button class="button button-small button-royal" id="send2uart">
-         Uart
-     </button>
- </div>
-
- <div class="button-bar">
-     <a class="button" style="background:red; color:white" id="led_red">Red</a>
-     <a class="button" style="background:green; color:white" id="led_green">Green</a>
-     <a class="button" style="background:blue; color:white" id="led_blue">Blue</a>
- </div>
- <div class="button-bar">
-     <a class="button" style="background:white; color:black" id="led_on">On</a>
-     <a class="button" style="background:black; color:white" id="led_off">Off</a>
- </div>
+  <div data-role="content">
+    <div class="ui-grid-a">
+      <div class="ui-block-a"> <a data-role="button" id="pause">暂停/继续</a> <a data-role="button" id="stop">停止</a> </div>
+      <div class="ui-block-b"> 左头：<span id="lt"></span>℃<br/>
+        右头：<span id="rt"></span>℃<br/>
+        底板：<span id="pt"></span>℃<br/>
+        状态：<span id="printstate"></span><br/>
+        选择文件：<span id="stlfile"></span> </div>
+    </div>
+    <div data-role="collapsible" data-collapsed="true">
+      <h1>文件列表</h1>
+      <p>
+      <ul>
+        <li><a data-role="button">兔子.x3g</a></li>
+        <li><a data-role="button">老虎.x3g</a></li>
+        <li><a data-role="button">花瓶.x3g</a></li>
+      </ul>
+      </p>
+    </div>
+  </div>
+  <div id="message">
+    <p>操作记录</p>
+    <!--倒序排列-->
+    <p>10:20:35 打印花瓶.x3g</p>
+    <p>10:21:35 暂停打印</p>
+    <p>10:25:35 停止打印</p>
+  </div>
 </div>
-
+<div data-role="footer">
+  <center>
+    青岛尤尼科技有限公司
+  </center>
+</div>
+</div>
+<div id="debug" style="display:none;"></div>
+</body>
 <script src="http://api.easylink.io/assets/js/mqttws31.js"></script>
+<script src="./js/crc.js"></script>
 <script>
-    // 从url中获取某个参数的值
+	var commondQueue=new Array();
+	
+	// 从url中获取某个参数的值
     function getParameterByName(name) {
         var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
         return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
     }
     // 得到设备ID
     var device_id = getParameterByName('device_id');
+	
     // 如果设备ID不为空，则执行连接MQTT的操作
     if ( device_id !== null ){
         ez_connect(device_id);
     }
-
-    // function dump_obj(myObject) {
-    //     var s = '';
-    //     for (var property in myObject) {
-    //         s += '<span>' + property +": " + myObject[property] + '</span>';
-    //     }
-    //     return s;
-    // }
 
     // 连接MQTT服务
     function ez_connect(device_id) {
@@ -84,7 +98,7 @@
         // 正常情况下access_token有效期为7200秒，重复获取将导致上次获取的access_token失效
         var access_token = getParameterByName('access_token');
 
-        document.getElementById('device_id').innerHTML = device_id;
+		document.title=device_id;
 
         // websocket连接
         // wsbroker:host
@@ -124,66 +138,103 @@
             if (responseObject.errorCode !== 0)
                 console.log("onConnectionLost:"+responseObject.errorMessage);
         }
+		
         // 消息到达
         function onMessageArrived(message) {
-            console.log(message.topic + ': ' +  message.payloadString);
+	     	console.log(message.topic + ': ' +  message.payloadString);	
+			var value=getReturnCommond(message.payloadString);		
+			//解析命令
+			analysis(value);
         }
-
+		function analysis(value){
+			var commond2=commondQueue[0];
+			var v="";
+			switch (commond2) {
+				case getCRCCommond("D5030A0102",false)://左头
+					v= parseInt(revert(value.substr(6,4)),16);
+					$("#lt").html(v);
+					commondQueue.shift();
+					break;
+				case getCRCCommond("D5030A0002",false)://右头
+					v= parseInt(revert(value.substr(6,4)),16);
+					$("#rt").html(v);
+					commondQueue.shift();
+					break;
+				case getCRCCommond("D5030A001E",false)://底板
+					v= parseInt(revert(value.substr(6,4)),16);
+					$("#pt").html(v);
+					commondQueue.shift();
+					break;
+					
+				case getCRCCommond("D5010B",false)://打印状态
+					v= parseInt(value.substr(6,2),16);
+					$("#printstate").html(v);
+					commondQueue.shift();
+					break;
+				default:
+					v="default";
+			}
+			alert(v+"===");
+			
+			
+			//if(value == "D503810000C9"){
+//				document.getElementById("tempid4").innerHTML="OK";
+//			}else{
+//				send2uart("D50212007D",true);
+//				document.getElementById("tempid4").innerHTML=getFileName(value);
+//			}
+			
+			//返回正确指令，删除整体指令，并执行下一条。
+			
+		}
+	
+		/**定时发送指令*/
+		var timeer;
+		//定时添加获取指令
+		function timedCount(){
+			commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
+			commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
+			commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
+			commondQueue.push(getCRCCommond("D5010B",false));//打印状态
+			
+			//计时器
+			timeer=setTimeout("timedCount()",5000);//毫秒
+		}
+		//定时发送指令
+		var timeer2;
+		function timedCount2(){
+			var commond=commondQueue[0];
+			if("undefined" != typeof(commond)){
+				send2uart(commond);
+			}
+			//计时器
+			timeer2=setTimeout("timedCount2()",500);//毫秒
+		}
+		timedCount();
+		timedCount2();
+		/**定时发送指令*/	
+		
         // 串口数据发送部分
-        var inputMessage = document.getElementById('message');
+        //var inputMessage = document.getElementById('message');
         // 将消息发送到指定的通道
-        function send2uart() {
-            if ( inputMessage.value.length == 0 ) return;
+        function send2uart(commond) {
             var topic = device_id+'/in';
-            var commond = '{"11":"' + inputMessage.value + '"}';
-            client.publish(topic, commond);
-            console.log(inputMessage.value);
-            inputMessage.value = '';
+			console.log(commond);
+            client.publish(topic, access_token+":"+commond);
         }
-        // document.querySelector('#send2uart').addEventListener('touchstart', send2uart);
-        document.querySelector('#send2uart').addEventListener('click', send2uart);
-
-        function led_on() {
-            var topic = device_id+'/in';
-            var commond = '{"rgbled_switch":true}';
-            client.publish(topic, commond);
-        }
-        // document.querySelector('#led_on').addEventListener('touchstart', led_on);
-        document.querySelector('#led_on').addEventListener('click', led_on);
-
-        function led_off() {
-            var topic = device_id+'/in';
-            var commond = '{"rgbled_switch":false}';
-            client.publish(topic, commond);
-        }
-        // document.querySelector('#led_off').addEventListener('touchstart', led_off);
-        document.querySelector('#led_off').addEventListener('click', led_off);
-
-        function led_red() {
-            var topic = device_id+'/in';
-            var commond = '{"rgbled_switch":true,"rgbled_hues":0, "rgbled_saturation":100, "rgbled_brightness":100}'; 
-            client.publish(topic, commond);
-        }
-        // document.querySelector('#led_red').addEventListener('touchstart', led_red);
-        document.querySelector('#led_red').addEventListener('click', led_red);
-
-        function led_green() {
-            var topic = device_id+'/in';
-            var commond = '{"rgbled_switch":true,"rgbled_hues":120, "rgbled_saturation":100, "rgbled_brightness":100}'; 
-            client.publish(topic, commond);
-        }
-        // document.querySelector('#led_green').addEventListener('touchstart', led_green);
-        document.querySelector('#led_green').addEventListener('click', led_green);
-
-        function led_blue() {
-            var topic = device_id+'/in';
-            var commond = '{"rgbled_switch":true,"rgbled_hues":240, "rgbled_saturation":100, "rgbled_brightness":100}'; 
-            client.publish(topic, commond);
-        }
-        // document.querySelector('#led_blue').addEventListener('touchstart', led_blue);
-        document.querySelector('#led_blue').addEventListener('click', led_blue);
-    }
-
+		
+		//添加指令
+		function addCommond(commond){
+			commondQueue.push(commond);//打印状态
+		}
+	
+		//暂停
+		document.querySelector('#pause').addEventListener('click', function(){addCommond(getCRCCommond("D50108",false))});
+				
+		//停止
+		document.querySelector('#stop').addEventListener('click', function(){addCommond(getCRCCommond("D50107",false))});
+ 
+    }	
     // 日志打印在页面的部分    
     var i = 0;
     console.log = (function(old_funct, div_log) {
@@ -194,7 +245,6 @@
                 p = '<p>';
             else
                 p = '<p class=\'gray\'>';
-
             if (typeof text === "object")
                 div_log.innerHTML += p + JSON.stringify(text) + '</p>';
             else
@@ -205,7 +255,5 @@
         };
     } (console.log.bind(console), document.getElementById("debug")));
     console.error = console.debug = console.info =  console.log;
-
 </script>
-</body>
 </html>
