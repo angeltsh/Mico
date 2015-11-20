@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<script src="./js/jquery-2.1.3.js"></script>
+</head>
+<body>
+<ul>
+  <li><a>兔子.x3g</a></li>
+  <li><a>老虎.x3g</a></li>
+  <li><a>花瓶.x3g</a></li>
+</ul>
+</body>
+<script>
+$("ul li").click(function(){
+		var fileName=$(this).children("a").get(0).innerHTML;
+		alert(fileName);
+		$("#stlfile").html("选中文件："+fileName);
+	});
+
+</script>
+</html>
