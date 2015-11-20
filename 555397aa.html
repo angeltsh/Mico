@@ -199,6 +199,7 @@
         // 将消息发送到指定的通道
         function send2uart(commond) {
             var topic = device_id+'/in';
+			alert("test=====");
 			console.log(commond);
             client.publish(topic, access_token+":"+commond);
         }
