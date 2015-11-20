@@ -165,6 +165,32 @@
 			//返回正确指令，删除整体指令，并执行下一条。
 			
 		}
+	
+		/**定时发送指令*/
+		var timeer;
+		//定时添加获取指令
+		function timedCount(){
+			commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
+			commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
+			commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
+			commondQueue.push(getCRCCommond("D5010B",false));//打印状态
+			
+			//计时器
+			timeer=setTimeout("timedCount()",5000);//毫秒
+		}
+		//定时发送指令
+		var timeer2;
+		function timedCount2(){
+			var commond=commondQueue[0];
+			if("undefined" != typeof(commond)){
+				send2uart(commond);
+			}
+			//计时器
+			timeer2=setTimeout("timedCount2()",500);//毫秒
+		}
+		timedCount();
+		timedCount2();
+		/**定时发送指令*/	
 		
         // 串口数据发送部分
         //var inputMessage = document.getElementById('message');
@@ -187,34 +213,6 @@
 		document.querySelector('#stop').addEventListener('click', function(){addCommond(getCRCCommond("D50107",false))});
  
     }
-	
-	
-	
-	/**定时发送指令*/
-	var timeer;
-	//定时添加获取指令
-	function timedCount(){
-		commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
-		commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
-		commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
-		commondQueue.push(getCRCCommond("D5010B",false));//打印状态
-		
-		//计时器
-		timeer=setTimeout("timedCount()",5000);//毫秒
-	}
-	//定时发送指令
-	var timeer2;
-	function timedCount2(){
-		var commond=commondQueue[0];
-		if("undefined" != typeof(commond)){
-			send2uart(commond);
-		}
-		//计时器
-		timeer2=setTimeout("timedCount2()",500);//毫秒
-	}
-	timedCount();
-	timedCount2();
-	/**定时发送指令*/	
 	
 	$("ul li").click(function(){
 			var name=$(this).children("a").get(0).innerHTML;
