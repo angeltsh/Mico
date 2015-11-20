@@ -159,6 +159,7 @@ $("ul li").click(function(){
         //var inputMessage = document.getElementById('message');
         // 将消息发送到指定的通道
         function send2uart(commond) {
+			alert("aaaaa");
             var topic = device_id+'/in';
 			console.log(commond);
             client.publish(topic, access_token+":"+commond);
