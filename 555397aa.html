@@ -67,10 +67,6 @@
     }
     // 得到设备ID
     var device_id = getParameterByName('device_id');
-    // 如果设备ID不为空，则执行连接MQTT的操作
-    if ( device_id !== null ){
-        ez_connect(device_id);
-    }
 
     // 连接MQTT服务
    var ez_connect = function(device_id) {
@@ -140,6 +136,11 @@
  
         document.querySelector('#led_red').addEventListener('click', function(){send2uart(getCRCCommond("D5030A0102",false))});
 		
+    }
+	
+	// 如果设备ID不为空，则执行连接MQTT的操作
+    if ( device_id !== null ){
+        ez_connect(device_id);
     }
 
     // 日志打印在页面的部分    
