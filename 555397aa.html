@@ -73,7 +73,7 @@
     }
 
     // 连接MQTT服务
-    function ez_connect(device_id) {
+   var ez_connect = function(device_id) {
         // 获取access_token
         // access_token是公众号的全局唯一票据，公众号调用各接口时都需使用access_token。
         // 正常情况下access_token有效期为7200秒，重复获取将导致上次获取的access_token失效
@@ -140,35 +140,6 @@
  
         document.querySelector('#led_red').addEventListener('click', function(){send2uart(getCRCCommond("D5030A0102",false))});
 		
-		
-		/**定时发送指令*/
-		var timeer;
-		//定时添加获取指令
-		function timedCount(){
-			commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
-			commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
-			commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
-			commondQueue.push(getCRCCommond("D5010B",false));//打印状态
-			
-			//计时器
-			timeer=setTimeout("timedCount()",5000);//毫秒
-			console.log(commondQueue.length+"==========");
-		}
-		//定时发送指令
-		var timeer2;
-		function timedCount2(){
-			var commond=commondQueue[0];
-			console.log(commond+"==========");
-			if("undefined" != typeof(commond)){
-				send2uart(commond);
-				commondQueue.shift();
-			}
-			//计时器
-			timeer2=setTimeout("timedCount2()",1000);//毫秒
-		}
-		timedCount();
-		timedCount2();
-		/**定时发送指令*/	
     }
 
     // 日志打印在页面的部分    
