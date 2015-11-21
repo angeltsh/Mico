@@ -136,12 +136,45 @@
  
         document.querySelector('#led_red').addEventListener('click', function(){send2uart(getCRCCommond("D5030A0102",false))});
 		
+		
+		return send2uart;
+		
     }
 	
 	// 如果设备ID不为空，则执行连接MQTT的操作
     if ( device_id !== null ){
         ez_connect(device_id);
     }
+	
+	
+	/**定时发送指令*/
+	var timeer;
+	//定时添加获取指令
+	function timedCount(){
+		commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
+		commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
+		commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
+		commondQueue.push(getCRCCommond("D5010B",false));//打印状态
+		
+		//计时器
+		timeer=setTimeout("timedCount()",5000);//毫秒
+	}
+	//定时发送指令
+	var timeer2;
+	function timedCount2(){
+		var commond=commondQueue[0];
+		if("undefined" != typeof(commond)){
+			 ez_connect(device_id)(commond);
+		}
+		//计时器
+		timeer2=setTimeout("timedCount2()",500);//毫秒
+	}
+	timedCount();
+	timedCount2();
+	/**定时发送指令*/	
+	
+	
+	
 
     // 日志打印在页面的部分    
     var i = 0;
