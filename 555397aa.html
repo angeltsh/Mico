@@ -58,6 +58,8 @@
 <script src="http://api.easylink.io/assets/js/mqttws31.js"></script>
 <script src="./js/crc.js"></script>
 <script>
+	var commondQueue=new Array();
+	
     // 从url中获取某个参数的值
     function getParameterByName(name) {
         var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
@@ -117,6 +119,9 @@
             if (responseObject.errorCode !== 0)
                 console.log("onConnectionLost:"+responseObject.errorMessage);
         }
+		
+		
+		
         // 消息到达
         function onMessageArrived(message) {
          	console.log(message.topic + ': ' +  message.payloadString);	
@@ -134,6 +139,33 @@
         }
  
         document.querySelector('#led_red').addEventListener('click', function(){send2uart(getCRCCommond("D5030A0102",false))});
+		
+		
+		/**定时发送指令*/
+		var timeer;
+		//定时添加获取指令
+		function timedCount(){
+			commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
+			commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
+			commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
+			commondQueue.push(getCRCCommond("D5010B",false));//打印状态
+			
+			//计时器
+			timeer=setTimeout("timedCount()",5000);//毫秒
+		}
+		//定时发送指令
+		var timeer2;
+		function timedCount2(){
+			var commond=commondQueue[0];
+			if("undefined" != typeof(commond)){
+				send2uart(commond);
+			}
+			//计时器
+			timeer2=setTimeout("timedCount2()",1000);//毫秒
+		}
+		timedCount();
+		timedCount2();
+		/**定时发送指令*/	
 
     }
 
