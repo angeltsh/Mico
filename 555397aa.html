@@ -64,9 +64,9 @@
 	
     // 如果设备ID不为空，则执行连接MQTT的操作
     if ( device_id !== null ){
-       deviceConsole=new ez_connect(device_id);    
-	   timedCount();
-	   timedCount2(deviceConsole.send2uart);
+       	deviceConsole=new ez_connect(device_id);    
+	   	timedCount();
+	   	timedCount2(deviceConsole.send2uart);
     }
 
     // 连接MQTT服务
@@ -128,6 +128,7 @@
         // 将消息发送到指定的通道
 		this.send2uart = send2uart;
       	function send2uart(commond) {
+			alert("tttttttttt");
             var topic = device_id+'/in';
 			commond=access_token+":"+commond;
             client.publish(topic, commond);
