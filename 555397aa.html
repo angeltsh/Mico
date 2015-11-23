@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width" />
 <title>MiCOKit08</title>
-<link href="//code.ionicframework.com/1.0.0-beta.13/css/ionic.css" rel="stylesheet">
+<link href="./css/ionic.css" rel="stylesheet">
 <style>
 #debug {
 	margin-top:44px;
@@ -43,7 +43,7 @@
   <div class="button-bar"> <a class="button" style="background:red; color:white" id="led_red">Red</a> <a class="button" style="background:green; color:white" id="led_green">Green</a> <a class="button" style="background:blue; color:white" id="led_blue">Blue</a> </div>
   <div class="button-bar"> <a class="button" style="background:white; color:black" id="led_on">On</a> <a class="button" style="background:black; color:white" id="led_off">Off</a> </div>
 </div>
-<script src="http://api.easylink.io/assets/js/mqttws31.js"></script>
+<script src="./js/mqttws31.js"></script>
 <script src="./js/crc.js"></script>
 <script>
 	var commondQueue=new Array();
@@ -61,17 +61,19 @@
     var device_id = getParameterByName('device_id');
 	
 	var deviceConsole;
+	var ez_connect=ez_connect;
+	
+	device_id="555397aa/d0bae4003738";//测试数据
 	
     // 如果设备ID不为空，则执行连接MQTT的操作
     if ( device_id !== null ){
        	deviceConsole=new ez_connect(device_id); 
-		alert("test=======");
 	   	timedCount();
 	   	timedCount2(deviceConsole.send2uart);
     }
 
     // 连接MQTT服务
-   var ez_connect = function(device_id) {
+   function ez_connect(device_id) {
         // 获取access_token
         // access_token是公众号的全局唯一票据，公众号调用各接口时都需使用access_token。
         // 正常情况下access_token有效期为7200秒，重复获取将导致上次获取的access_token失效
@@ -129,7 +131,6 @@
         // 将消息发送到指定的通道
 		this.send2uart = send2uart;
       	function send2uart(commond) {
-			alert("tttttttttt");
             var topic = device_id+'/in';
 			commond=access_token+":"+commond;
             client.publish(topic, commond);
@@ -142,7 +143,7 @@
 	/**定时发送指令*/	
 	//定时添加获取指令
 	function timedCount(){
-		alert("test======2=");
+		debug("test======2=");
 		commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
 		commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
 		commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
@@ -152,13 +153,13 @@
 		timeer=setTimeout("timedCount()",1000);//毫秒
 	}
 	function timedCount2(fnSendCommond){
-		alert("test=====3==");
+		debug("test=====3==");
 		var commond=commondQueue[0];
 		if("undefined" != typeof(commond)){
 			fnSendCommond(commond);
 		}
 		//计时器
-		timeer2=setTimeout("timedCount2()",500);//毫秒
+		timeer2=setTimeout("timedCount2("+fnSendCommond+")",500);//毫秒
 	}
 	/**定时发送指令*/	
 
@@ -183,6 +184,11 @@
         };
     } (console.log.bind(console), document.getElementById("debug")));
     console.error = console.debug = console.info =  console.log;
+
+	function debug(txt){
+		console.log(txt);
+	}
+
 
 </script>
 </body>
