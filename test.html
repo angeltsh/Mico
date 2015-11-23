@@ -13,24 +13,24 @@
 </ul>
 </body>
 <script>
-var person=function(){
-	this.test=test;
-	function test(value){
-		console.log(value);
-	}
+//demo1
+function sayHi(sName,sMessage){
+	log("Hello "+sName+sMessage);
 }
-var s=new person();
-
-c(s.test,"aaa");
+sayHi("David, "," Nice to meet you!");
 
 
-function c(fn,value){
-	fn(value);
+//demo2
+function sum(iNum1,iNum2){
+	return iNum1+iNum2;
+}
+var iResult=sum(1,1);
+log(iResult);
+
+
+function log(txt){
+	console.log(txt);
 }
 
-
-
-
-
- </script>
+</script>
 </html>

@@ -63,7 +63,7 @@
 	var deviceConsole;
 	var ez_connect=ez_connect;
 	
-	device_id="555397aa/d0bae4003738";//测试数据
+	device_id="555397aa/d0bae4001fdf";//测试数据
 	
     // 如果设备ID不为空，则执行连接MQTT的操作
     if ( device_id !== null ){
@@ -78,6 +78,7 @@
         // access_token是公众号的全局唯一票据，公众号调用各接口时都需使用access_token。
         // 正常情况下access_token有效期为7200秒，重复获取将导致上次获取的access_token失效
         var access_token = getParameterByName('access_token');
+		access_token="123456789012345678901234567890123456"
 
         document.getElementById('device_id').innerHTML = device_id;
 
@@ -130,20 +131,20 @@
         //var inputMessage = document.getElementById('message');
         // 将消息发送到指定的通道
 		this.send2uart = send2uart;
-      	function send2uart(commond) {
+      	function send2uart() {
             var topic = device_id+'/in';
+			var commond=commondQueue.shift();
 			commond=access_token+":"+commond;
             client.publish(topic, commond);
-            console.log(inputMessage.value);
+            console.log(commond);
         }
 		
        document.querySelector('#led_red').addEventListener('click', function(){send2uart(getCRCCommond("D5030A0102",false))});
     }
-	
+
 	/**定时发送指令*/	
 	//定时添加获取指令
 	function timedCount(){
-		debug("test======2=");
 		commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
 		commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
 		commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
@@ -153,7 +154,6 @@
 		timeer=setTimeout("timedCount()",1000);//毫秒
 	}
 	function timedCount2(fnSendCommond){
-		debug("test=====3==");
 		var commond=commondQueue[0];
 		if("undefined" != typeof(commond)){
 			fnSendCommond(commond);
