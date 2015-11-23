@@ -226,6 +226,7 @@
 		//添加指令
 		function addCommond(commond){
 			commondQueue.push(commond);//打印状态
+			console.log("in:"+commond);
 		}
 	
 		//暂停
@@ -234,7 +235,8 @@
 		//停止
 		document.querySelector('#stop').addEventListener('click', function(){addCommond(getCRCCommond("D50107",false))});
  
-    }	
+    }
+	
     // 日志打印在页面的部分    
     var i = 0;
     console.log = (function(old_funct, div_log) {

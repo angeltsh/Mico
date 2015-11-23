@@ -13,25 +13,24 @@
 </ul>
 </body>
 <script>
-/*<!--$("ul li").click(function(){
-		var fileName=$(this).children("a").get(0).innerHTML;
-		alert(fileName);
-		$("#stlfile").html("选中文件："+fileName);
-	});-->*/
-function a(value){
-	
-	function c(){
-		b(value);
-	}
-	
-	function b(value){
+var Person=function(){
+	this.test=test;
+	function test(value){
 		alert(value);
 	}
-	
-	return c;
+}
+var s=new Person();
+
+c(s.test,"aaa");
+
+
+function c(fn,value){
+	fn(value);
 }
 
-a(3)();
 
-</script>
+
+
+
+ </script>
 </html>
