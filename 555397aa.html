@@ -64,7 +64,8 @@
 	
     // 如果设备ID不为空，则执行连接MQTT的操作
     if ( device_id !== null ){
-       	deviceConsole=new ez_connect(device_id);    
+       	deviceConsole=new ez_connect(device_id); 
+		alert("test=======");
 	   	timedCount();
 	   	timedCount2(deviceConsole.send2uart);
     }
@@ -141,6 +142,7 @@
 	/**定时发送指令*/	
 	//定时添加获取指令
 	function timedCount(){
+		alert("test======2=");
 		commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
 		commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
 		commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
@@ -150,6 +152,7 @@
 		timeer=setTimeout("timedCount()",1000);//毫秒
 	}
 	function timedCount2(fnSendCommond){
+		alert("test=====3==");
 		var commond=commondQueue[0];
 		if("undefined" != typeof(commond)){
 			fnSendCommond(commond);
