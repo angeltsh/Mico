@@ -30,6 +30,9 @@
 	word-wrap: break-word;
 	margin-bottom: 2px;
 }
+ul li {
+	list-style:none;
+}
 </style>
 </head>
 <body>
@@ -39,20 +42,37 @@
   </div>
   <div data-role="content">
     <div class="ui-grid-a">
-      <div class="ui-block-a"> <a data-role="button" id="pause">暂停/继续</a> <a data-role="button" id="stop">停止</a> </div>
+      <div class="ui-block-a"> <a data-role="button" id="pause">暂停/继续</a> <a data-role="button" id="stop">停止</a><a data-role="button" id="getfiles">获取文件列表</a></div>
       <div class="ui-block-b"> 左头：<span id="lt"></span>℃<br/>
         右头：<span id="rt"></span>℃<br/>
         底板：<span id="pt"></span>℃<br/>
         状态：<span id="printstate"></span><br/>
-        选择文件：<span id="stlfile"></span> </div>
+        <span id="ppercent"></span><br/>
+        <span id="stlfile"></span> <br/>
+      </div>
     </div>
-    <div data-role="collapsible" data-collapsed="true">
+    <div id="file-list" data-role="collapsible" data-collapsed="false">
       <h1>文件列表</h1>
       <p>
       <ul>
-        <li><a data-role="button">兔子.x3g</a></li>
-        <li><a data-role="button">老虎.x3g</a></li>
-        <li><a data-role="button">花瓶.x3g</a></li>
+        <li>
+          <div data-role="collapsible" data-collapsed="true">
+            <h1 name="filename"> 兔子.x3g </h1>
+            <p> <a data-role="button" id="pause">打印</a> </p>
+          </div>
+        </li>
+        <li>
+          <div data-role="collapsible" data-collapsed="true">
+            <h1 name="filename"> 老虎.x3g </h1>
+            <p> <a data-role="button" name="printfile">打印</a> </p>
+          </div>
+        </li>
+        <li>
+          <div data-role="collapsible" data-collapsed="true">
+            <h1 name="filename"> 花瓶.x3g </h1>
+            <p> <a data-role="button" id="pause">打印</a> </p>
+          </div>
+        </li>
       </ul>
       </p>
     </div>
@@ -73,40 +93,58 @@
 </div>
 <div id="debug" style="display:none;"></div>
 </body>
-<script src="http://api.easylink.io/assets/js/mqttws31.js"></script>
+<script src="./js/mqttws31.js"></script>
 <script src="./js/crc.js"></script>
 <script>
+<!--
 	var commondQueue=new Array();
 	
-	// 从url中获取某个参数的值
+	/**定时发送指令*/
+	var timeer;//写入指令
+	var timeer2;//发送指令
+	
+    // 从url中获取某个参数的值
     function getParameterByName(name) {
         var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
         return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
     }
-    // 得到设备ID
+   // 得到设备ID
     var device_id = getParameterByName('device_id');
+
+	var access_token;//微信token
+	var client;//客户端
+	var ez_connect=ez_connect;
+	var print_state=0;//打印状态 
+	var files_list=new Array();//文件列表
+	var current_file=null;//当前文件
+	
+	device_id="555397aa/d0bae4001fdf";//网络测试数据
+	//device_id="555397aa/d0bae4003738";//本地测试数据
+	//current_file="test";//本地文件
+	//print_state=1;
+	
+	document.title = device_id;//修改title
 	
     // 如果设备ID不为空，则执行连接MQTT的操作
     if ( device_id !== null ){
-        ez_connect(device_id);
+       	ez_connect(device_id); 
     }
 
     // 连接MQTT服务
-    function ez_connect(device_id) {
+   function ez_connect(device_id) {
         // 获取access_token
         // access_token是公众号的全局唯一票据，公众号调用各接口时都需使用access_token。
         // 正常情况下access_token有效期为7200秒，重复获取将导致上次获取的access_token失效
-        var access_token = getParameterByName('access_token');
-
-		document.title=device_id;
-
+        access_token = getParameterByName('access_token');
+		access_token="123456789012345678901234567890123456"
+		
         // websocket连接
         // wsbroker:host
         // wsport:端口 默认1983
         // Client-ID ： v1_web_[MAC]  //版本号_app_手机MAC(必须是12位小写)
         var wsbroker = "api.easylink.io";  //mqtt websocket enabled broker
         var wsport = 1983 // port for above
-        var client = new Paho.MQTT.Client(wsbroker, wsport, "v1-web-" + parseInt(Math.random() * 1000000, 12));
+        client = new Paho.MQTT.Client(wsbroker, wsport, "v1-web-" + parseInt(Math.random() * 1000000, 12));
 
         // 基本参数配置
         // 连接丢失所对应的callback函数
@@ -132,6 +170,8 @@
             console.log("device_id:"+device_id);
             console.log("onConnect");
             client.subscribe(subtopic, {qos: 0});
+			timedCount();
+			timedCount2(send2uart);
         }
         // 连接丢失
         function onConnectionLost(responseObject) {
@@ -153,29 +193,64 @@
 				case getCRCCommond("D5030A0102",false)://左头
 					v= parseInt(revert(value.substr(6,4)),16);
 					$("#lt").html(v);
-					commondQueue.shift();
 					break;
 				case getCRCCommond("D5030A0002",false)://右头
 					v= parseInt(revert(value.substr(6,4)),16);
 					$("#rt").html(v);
-					commondQueue.shift();
 					break;
 				case getCRCCommond("D5030A001E",false)://底板
 					v= parseInt(revert(value.substr(6,4)),16);
 					$("#pt").html(v);
-					commondQueue.shift();
 					break;
-					
+				case getCRCCommond("D5011D",false)://获取打印百分比
+					v= parseInt(value.substr(2*3,2),16);
+					$("#ppercent").html("打印百分比："+v+"%");
+					break;
 				case getCRCCommond("D5010B",false)://打印状态
 					v= parseInt(value.substr(6,2),16);
-					$("#printstate").html(v);
-					commondQueue.shift();
+					print_state=v;
+					var msg="";
+					switch(v){
+						case 0://正在打印
+							msg="正在打印";
+							break;
+						case 1://空闲、完成打印
+							msg="空闲";
+							break;
+						case 2://被暂停
+							msg="暂停打印";
+							break;
+					}
+					$("#printstate").html(msg);
+					break;
+				case getCRCCommond("D50108",false)://暂停
+					v= parseInt(value.substr(6,2),16);
+					$("#printstate").html("暂停");
+					break;
+				case getCRCCommond("D50107",false)://停止
+					v= parseInt(value.substr(6,2),16);
+					$("#printstate").html("停止");
+					break;
+				case getCRCCommond("D5021201",false)://开始获取文件
+					console.log("==开始获取文件==");
+				case getCRCCommond("D5021200",false)://继续获取文件
+					v="file";
+					if(value == "D503810000C9"){//文件列表结尾，无文件
+						console.log("==结束获取文件==");
+						v="";
+						//显示文件列表
+						showFileList(files_list);
+						break;
+					}
+					var filename=getFileName(value)
+					console.log(filename+"========文件======"+value);
+					//$("#stlfile").html(filename);
+					files_list.push(filename);
 					break;
 				default:
 					v="default";
+					break;
 			}
-			alert(v+"===");
-			
 			
 			//if(value == "D503810000C9"){
 //				document.getElementById("tempid4").innerHTML="OK";
@@ -184,61 +259,113 @@
 //				document.getElementById("tempid4").innerHTML=getFileName(value);
 //			}
 			
-			//返回正确指令，删除整体指令，并执行下一条。
 			
-		}
-	
-		/**定时发送指令*/
-		var timeer;
-		//定时添加获取指令
-		function timedCount(){
-			commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
-			commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
-			commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
-			commondQueue.push(getCRCCommond("D5010B",false));//打印状态
-			
-			//计时器
-			timeer=setTimeout("timedCount()",5000);//毫秒
-		}
-		//定时发送指令
-		var timeer2;
-		function timedCount2(){
-			var commond=commondQueue[0];
-			if("undefined" != typeof(commond)){
-				send2uart(commond);
+			if(v == "default"){//未收到正确回复指令
+			}else if(v == "file"){//未完成文件列表获取，继续获取
+				commondQueue.shift();
+				addCommond(getCRCCommond("D5021200",false));
+			}else{//返回正确指令，删除整体指令，并执行下一条
+				commondQueue.shift();
 			}
-			//计时器
-			timeer2=setTimeout("timedCount2()",500);//毫秒
 		}
-		timedCount();
-		timedCount2();
-		/**定时发送指令*/	
-		
+
         // 串口数据发送部分
         //var inputMessage = document.getElementById('message');
         // 将消息发送到指定的通道
-        function send2uart(commond) {
+      	function send2uart() {
             var topic = device_id+'/in';
-			console.log(commond);
-            client.publish(topic, access_token+":"+commond);
+			
+			var commond=commondQueue[0];
+			commond=access_token+":"+commond;
+            
+			client.publish(topic, commond);
         }
 		
 		//添加指令
 		function addCommond(commond){
-			commondQueue.push(commond);//打印状态
-			console.log("in:"+commond);
+			commondQueue.unshift(commond);
+			send2uart();
 		}
+		
+		
 	
 		//暂停
 		document.querySelector('#pause').addEventListener('click', function(){addCommond(getCRCCommond("D50108",false))});
 				
 		//停止
 		document.querySelector('#stop').addEventListener('click', function(){addCommond(getCRCCommond("D50107",false))});
- 
+	   
+	   
+	   	//获取文件列表
+		function getFiles(){
+			var commond;
+			switch(print_state){
+				case 0://正在打印
+				case 2://被暂停
+					//获取打印百分比
+					commond="D5011D";
+					break;
+				case 1://空闲、完成打印
+					//获取文件列表
+					commond="D5021201";
+					break;
+			} 
+			addCommond(getCRCCommond(commond,false));
+		}
+	   	//获取文件列表
+		document.querySelector('#getfiles').addEventListener('click',getFiles);
+		
+		function printFile(){
+			addCommond(sendCRCFileName(current_file));
+		}
+		//获取文件列表
+		document.querySelector('a[name="printfile"]').addEventListener('click',printFile);
+		
+		
+		
+		//显示文件列表
+		function showFileList(alist){
+			for(var i=0;i<alist.length;i++){
+				var fileName=alist[i];
+				$("#file-list ul").append("<li><div data-role=\"collapsible\" data-collapsed=\"true\"><h1 name=\"filename\">"+fileName+"</h1><p> <a data-role=\"button\" name=\"printfile\">打印</a> </p></div></li>");
+			}
+		}	
+		
+		//文件列表
+	   	$("h1[name='filename']").click(function(){
+			current_file=$(this).children().html();
+			current_file=current_file.substr(0,current_file.indexOf("<")).trim();			
+		  	$("#stlfile").html("选择文件："+current_file);
+		  	$("#print").css("display","block");
+	  	});
     }
+
+	/**定时发送指令*/	
+	//定时添加获取指令
+	function timedCount(){
+		commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
+		commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
+		commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
+		commondQueue.push(getCRCCommond("D5010B",false));//打印状态
+		
+		//计时器
+		timeer=setTimeout("timedCount()",8000);//毫秒
+	}
 	
+	function timedCount2(fnSendCommond){
+		var commond=commondQueue[0];
+		if("undefined" != typeof(commond)){
+			fnSendCommond(commond);
+		}
+		//计时器
+		timeer2=setTimeout("timedCount2("+fnSendCommond+")",1000);//毫秒
+	}
+	/**定时发送指令*/	
+	
+	
+
     // 日志打印在页面的部分    
-    var i = 0;
+    /*var i = 0;
     console.log = (function(old_funct, div_log) {
         return function(text) {
             old_funct(text);
@@ -247,6 +374,7 @@
                 p = '<p>';
             else
                 p = '<p class=\'gray\'>';
+
             if (typeof text === "object")
                 div_log.innerHTML += p + JSON.stringify(text) + '</p>';
             else
@@ -257,5 +385,13 @@
         };
     } (console.log.bind(console), document.getElementById("debug")));
     console.error = console.debug = console.info =  console.log;
+*/
+
+	function debug(txt){
+		console.log(txt);
+	}
+
+// -->
 </script>
+</body>
 </html>

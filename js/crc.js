@@ -13,7 +13,7 @@ function getReturnCommond(message){
 
 //获取文件名称
 function getFileName(value){
-	value=value.substr(2*3,(parseInt(value.substr(2*1,2),16)-1));
+	value=value.substr(2*3,2*(parseInt(value.substr(2*1,2),16)-1));
 	var fileName="";
 	for(var i=0;i<value.length;i=i+2){
 		fileName+=String.fromCharCode(parseInt(value.substr(i,2),16));
@@ -21,9 +21,9 @@ function getFileName(value){
 	return fileName;
 }
 
-//文件名称转换为CRC
+//文件名称转换为CRC，文件全名，带后缀
 function sendCRCFileName(fileName){
-	fileName=fileName+".x3g";
+	//fileName=fileName+".x3g";//不带后缀
 	//获取长度
 	var result="D5"+getFormatNum(fileName.length+2,2,16)+"10";
 	//文件名UTF-8编码十六进制

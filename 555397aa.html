@@ -46,6 +46,7 @@
 <script src="./js/mqttws31.js"></script>
 <script src="./js/crc.js"></script>
 <script>
+<!--
 	var commondQueue=new Array();
 	
 	/**定时发送指令*/
@@ -59,17 +60,18 @@
     }
    // 得到设备ID
     var device_id = getParameterByName('device_id');
+	document.title = device_id;
 	
 	var deviceConsole;
 	var ez_connect=ez_connect;
+	var access_token;
+	var client;
 	
-	device_id="555397aa/d0bae4001fdf";//测试数据
+	device_id="555397aa/d0bae4003738";//测试数据
 	
     // 如果设备ID不为空，则执行连接MQTT的操作
     if ( device_id !== null ){
        	deviceConsole=new ez_connect(device_id); 
-	   	timedCount();
-	   	timedCount2(deviceConsole.send2uart);
     }
 
     // 连接MQTT服务
@@ -77,10 +79,8 @@
         // 获取access_token
         // access_token是公众号的全局唯一票据，公众号调用各接口时都需使用access_token。
         // 正常情况下access_token有效期为7200秒，重复获取将导致上次获取的access_token失效
-        var access_token = getParameterByName('access_token');
+        access_token = getParameterByName('access_token');
 		access_token="123456789012345678901234567890123456"
-
-        document.getElementById('device_id').innerHTML = device_id;
 
         // websocket连接
         // wsbroker:host
@@ -88,7 +88,7 @@
         // Client-ID ： v1_web_[MAC]  //版本号_app_手机MAC(必须是12位小写)
         var wsbroker = "api.easylink.io";  //mqtt websocket enabled broker
         var wsport = 1983 // port for above
-        var client = new Paho.MQTT.Client(wsbroker, wsport, "v1-web-" + parseInt(Math.random() * 1000000, 12));
+        client = new Paho.MQTT.Client(wsbroker, wsport, "v1-web-" + parseInt(Math.random() * 1000000, 12));
 
         // 基本参数配置
         // 连接丢失所对应的callback函数
@@ -114,6 +114,8 @@
             console.log("device_id:"+device_id);
             console.log("onConnect");
             client.subscribe(subtopic, {qos: 0});
+			timedCount();
+			timedCount2(send2uart);
         }
         // 连接丢失
         function onConnectionLost(responseObject) {
@@ -139,7 +141,9 @@
             console.log(commond);
         }
 		
-       document.querySelector('#led_red').addEventListener('click', function(){send2uart(getCRCCommond("D5030A0102",false))});
+       	document.querySelector('#led_red').addEventListener('click', function(){send2uart(getCRCCommond("D5030A0102",false))});
+		
+	   
     }
 
 	/**定时发送指令*/	
@@ -151,8 +155,9 @@
 		commondQueue.push(getCRCCommond("D5010B",false));//打印状态
 		
 		//计时器
-		timeer=setTimeout("timedCount()",1000);//毫秒
+		timeer=setTimeout("timedCount()",10000);//毫秒
 	}
+	
 	function timedCount2(fnSendCommond){
 		var commond=commondQueue[0];
 		if("undefined" != typeof(commond)){
@@ -189,7 +194,7 @@
 		console.log(txt);
 	}
 
-
+// -->
 </script>
 </body>
 </html>

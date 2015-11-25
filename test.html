@@ -4,6 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>无标题文档</title>
 <script src="./js/jquery-2.1.3.js"></script>
+<script src="./js/crc.js"></script>
 </head>
 <body>
 <ul>
@@ -15,7 +16,7 @@
 <script>
 //demo1
 function sayHi(sName,sMessage){
-	log("Hello "+sName+sMessage);
+	//log("Hello "+sName+sMessage);
 }
 sayHi("David, "," Nice to meet you!");
 
@@ -25,9 +26,19 @@ function sum(iNum1,iNum2){
 	return iNum1+iNum2;
 }
 var iResult=sum(1,1);
-log(iResult);
+//log(iResult);
 
 
+//demo3
+var s1="Hello there there";
+var news=s1.search('there');
+//log(news);
+
+var fileName="test";
+log(sendCRCFileName(fileName));
+
+
+//控制台输出日志
 function log(txt){
 	console.log(txt);
 }
