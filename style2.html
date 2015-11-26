@@ -55,29 +55,12 @@ ul li {
       <h1>文件列表</h1>
       <p>
       <ul>
-        <li>
-          <div data-role="collapsible" data-collapsed="true">
-            <h1 name="filename"> 兔子.x3g </h1>
-            <p> <a data-role="button" id="pause">打印</a> </p>
-          </div>
-        </li>
-        <li>
-          <div data-role="collapsible" data-collapsed="true">
-            <h1 name="filename"> 老虎.x3g </h1>
-            <p> <a data-role="button" name="printfile">打印</a> </p>
-          </div>
-        </li>
-        <li>
-          <div data-role="collapsible" data-collapsed="true">
-            <h1 name="filename"> 花瓶.x3g </h1>
-            <p> <a data-role="button" id="pause">打印</a> </p>
-          </div>
-        </li>
+ 
       </ul>
       </p>
     </div>
   </div>
-  <div id="message">
+  <div id="debug">
     <p>操作记录</p>
     <!--倒序排列-->
     <p>10:20:35 打印花瓶.x3g</p>
@@ -117,6 +100,7 @@ ul li {
 	var print_state=0;//打印状态 
 	var files_list=new Array();//文件列表
 	var current_file=null;//当前文件
+	var printing_file=null;//正在打印文件
 	
 	device_id="555397aa/d0bae4001fdf";//网络测试数据
 	//device_id="555397aa/d0bae4003738";//本地测试数据
@@ -167,11 +151,11 @@ ul li {
                 message.destinationName = topic;
                 client.send(message);
             }
-            console.log("device_id:"+device_id);
+           	//console.log("device_id:"+device_id);
             console.log("onConnect");
             client.subscribe(subtopic, {qos: 0});
-			timedCount();
-			timedCount2(send2uart);
+			//timedCount();
+			//timedCount2(send2uart);
         }
         // 连接丢失
         function onConnectionLost(responseObject) {
@@ -181,7 +165,7 @@ ul li {
 		
         // 消息到达
         function onMessageArrived(message) {
-	     	console.log(message.topic + ': ' +  message.payloadString);	
+	     	console.log('返回数据<--:' +  message.payloadString);	
 			var value=getReturnCommond(message.payloadString);		
 			//解析命令
 			analysis(value);
@@ -247,6 +231,24 @@ ul li {
 					//$("#stlfile").html(filename);
 					files_list.push(filename);
 					break;
+				case sendCRCFileName(printing_file)://打印文件
+					v= parseInt(value.substr(6,2),16);
+					print_state=v;
+					var msg="";
+					switch(v){
+						case 0://正在打印
+							msg="正在打印";
+							break;
+						case 1://空闲、完成打印
+							msg="空闲";
+							break;
+						case 2://被暂停
+							msg="暂停打印";
+							break;
+					}
+					$("#printstate").html(msg);
+					$("#stlfile").html("正在打印"+printing_file);
+					break;
 				default:
 					v="default";
 					break;
@@ -283,12 +285,10 @@ ul li {
 		
 		//添加指令
 		function addCommond(commond){
-			commondQueue.unshift(commond);
+			commondQueue.push(commond);
 			send2uart();
 		}
 		
-		
-	
 		//暂停
 		document.querySelector('#pause').addEventListener('click', function(){addCommond(getCRCCommond("D50108",false))});
 				
@@ -299,6 +299,7 @@ ul li {
 	   	//获取文件列表
 		function getFiles(){
 			var commond;
+			addCommond(getCRCCommond("D5010B",false));//查询打印状态
 			switch(print_state){
 				case 0://正在打印
 				case 2://被暂停
@@ -315,21 +316,25 @@ ul li {
 	   	//获取文件列表
 		document.querySelector('#getfiles').addEventListener('click',getFiles);
 		
-		function printFile(){
-			addCommond(sendCRCFileName(current_file));
+		function printFile(fileName){
+			addCommond(getCRCCommond("D5010B",false));//查询打印状态
+			if(print_state == 1){//空闲状态可以打印
+				addCommond(sendCRCFileName(fileName));
+				printing_file=fileName;
+			}
 		}
-		//获取文件列表
-		document.querySelector('a[name="printfile"]').addEventListener('click',printFile);
-		
-		
-		
+			
 		//显示文件列表
 		function showFileList(alist){
 			for(var i=0;i<alist.length;i++){
 				var fileName=alist[i];
-				$("#file-list ul").append("<li><div data-role=\"collapsible\" data-collapsed=\"true\"><h1 name=\"filename\">"+fileName+"</h1><p> <a data-role=\"button\" name=\"printfile\">打印</a> </p></div></li>");
+				$("#file-list ul").append("<li><div data-role=\"collapsible\" data-collapsed=\"true\"><h1 name=\"filename\">"+fileName+"</h1><p> <a data-role=\"button\" name=\"printfile"+i+"\">打印</a> </p></div></li>");
+				$("a[name='printfile"+i+"']").bind('click',{name:fileName},function(e){
+						var fileName=e.data.name; 
+						printFile(fileName);
+				});
 			}
-		}	
+		}
 		
 		//文件列表
 	   	$("h1[name='filename']").click(function(){
@@ -364,15 +369,15 @@ ul li {
 	
 	
 
-    // 日志打印在页面的部分    
-    /*var i = 0;
+    // 日志打印在页面的部分
+    var i = 0;
     console.log = (function(old_funct, div_log) {
         return function(text) {
             old_funct(text);
             var p = '';
-            if (i%2 == 0)
-                p = '<p>';
-            else
+            //if (i%2 == 0)
+            //    p = '<p>';
+            //else
                 p = '<p class=\'gray\'>';
 
             if (typeof text === "object")
@@ -385,11 +390,12 @@ ul li {
         };
     } (console.log.bind(console), document.getElementById("debug")));
     console.error = console.debug = console.info =  console.log;
-*/
-
+	
+	//调试调用
 	function debug(txt){
 		console.log(txt);
 	}
+
 
 // -->
 </script>
