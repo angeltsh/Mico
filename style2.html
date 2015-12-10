@@ -8,7 +8,6 @@
 <link href="./css/jquery.mobile-1.4.5.min.css" rel="stylesheet">
 <script src="./js/jquery-2.1.3.js"></script>
 <script src="./js/jquery.mobile-1.4.5.min.js"></script>
-<script src="./js/crc.js"></script>
 <style>
 #debug {
 	margin-top:44px;
@@ -97,10 +96,11 @@ ul li {
 	var access_token;//微信token
 	var client;//客户端
 	var ez_connect=ez_connect;
-	var print_state=0;//打印状态 
+	var print_state=-1;//打印状态 
 	var files_list=new Array();//文件列表
 	var current_file=null;//当前文件
 	var printing_file=null;//正在打印文件
+	var lastCommond="";//最后一次执行的命令
 	
 	device_id="555397aa/d0bae4001fdf";//网络测试数据
 	//device_id="555397aa/d0bae4003738";//本地测试数据
@@ -147,6 +147,7 @@ ul li {
             // commond：指令
             client.publish = function(topic, commond) {
                 console.log("现在执行-->:"+commond);
+				lastCommond=commond;//最后一次执行的命令
                 message = new Paho.MQTT.Message(commond);
                 message.destinationName = topic;
                 client.send(message);
@@ -154,13 +155,14 @@ ul li {
            	//console.log("device_id:"+device_id);
             console.log("onConnect");
             client.subscribe(subtopic, {qos: 0});
-			//timedCount();
-			//timedCount2(send2uart);
+			timedCount();
+			timedCount2(send2uart);
         }
         // 连接丢失
         function onConnectionLost(responseObject) {
-            if (responseObject.errorCode !== 0)
+            if (responseObject.errorCode !== 0){
                 console.log("onConnectionLost:"+responseObject.errorMessage);
+			}
         }
 		
         // 消息到达
@@ -169,89 +171,95 @@ ul li {
 			var value=getReturnCommond(message.payloadString);		
 			//解析命令
 			analysis(value);
+			lastCommond="";
         }
 		function analysis(value){
 			var commond2=commondQueue[0];
-			var v="";
-			switch (commond2) {
-				case getCRCCommond("D5030A0102",false)://左头
-					v= parseInt(revert(value.substr(6,4)),16);
-					$("#lt").html(v);
-					break;
-				case getCRCCommond("D5030A0002",false)://右头
-					v= parseInt(revert(value.substr(6,4)),16);
-					$("#rt").html(v);
-					break;
-				case getCRCCommond("D5030A001E",false)://底板
-					v= parseInt(revert(value.substr(6,4)),16);
-					$("#pt").html(v);
-					break;
-				case getCRCCommond("D5011D",false)://获取打印百分比
-					v= parseInt(value.substr(2*3,2),16);
-					$("#ppercent").html("打印百分比："+v+"%");
-					break;
-				case getCRCCommond("D5010B",false)://打印状态
-					v= parseInt(value.substr(6,2),16);
-					print_state=v;
-					var msg="";
-					switch(v){
-						case 0://正在打印
-							msg="正在打印";
-							break;
-						case 1://空闲、完成打印
-							msg="空闲";
-							break;
-						case 2://被暂停
-							msg="暂停打印";
-							break;
-					}
-					$("#printstate").html(msg);
-					break;
-				case getCRCCommond("D50108",false)://暂停
-					v= parseInt(value.substr(6,2),16);
-					$("#printstate").html("暂停");
-					break;
-				case getCRCCommond("D50107",false)://停止
-					v= parseInt(value.substr(6,2),16);
-					$("#printstate").html("停止");
-					break;
-				case getCRCCommond("D5021201",false)://开始获取文件
-					console.log("==开始获取文件==");
-				case getCRCCommond("D5021200",false)://继续获取文件
-					v="file";
-					if(value == "D503810000C9"){//文件列表结尾，无文件
-						console.log("==结束获取文件==");
-						v="";
-						//显示文件列表
-						showFileList(files_list);
+			var v="default";
+			if(value!="error"){
+				switch (commond2) {
+					case getCRCCommond("D5030A0102",false)://左头
+						v= parseInt(revert(value.substr(6,4)),16);
+						$("#lt").html(v);
 						break;
-					}
-					var filename=getFileName(value)
-					console.log(filename+"========文件======"+value);
-					//$("#stlfile").html(filename);
-					files_list.push(filename);
-					break;
-				case sendCRCFileName(printing_file)://打印文件
-					v= parseInt(value.substr(6,2),16);
-					print_state=v;
-					var msg="";
-					switch(v){
-						case 0://正在打印
-							msg="正在打印";
+					case getCRCCommond("D5030A0002",false)://右头
+						v= parseInt(revert(value.substr(6,4)),16);
+						$("#rt").html(v);
+						break;
+					case getCRCCommond("D5030A001E",false)://底板
+						v= parseInt(revert(value.substr(6,4)),16);
+						$("#pt").html(v);
+						break;
+					case getCRCCommond("D50114",false)://获取正在打印的文件名
+						v="";
+						var filename=getFileName(value);
+						$("#stlfile").html("正在打印"+filename);
+						break;
+					case getCRCCommond("D5011D",false)://获取打印百分比
+						v= parseInt(value.substr(2*3,2),16);
+						$("#ppercent").html("打印百分比："+v+"%");
+						break;
+					case getCRCCommond("D5010B",false)://打印状态
+						v= parseInt(value.substr(6,2),16);
+						print_state=v;
+						var msg="";
+						switch(v){
+							case 0://正在打印
+								msg="正在打印";
+								break;
+							case 1://空闲、完成打印
+								msg="空闲";
+								break;
+							case 2://被暂停
+								msg="暂停打印";
+								break;
+						}
+						$("#printstate").html(msg);
+						break;
+					case getCRCCommond("D50108",false)://暂停
+						v= parseInt(value.substr(6,2),16);
+						$("#printstate").html("暂停打印");
+						break;
+					case getCRCCommond("D50107",false)://停止
+						v= parseInt(value.substr(6,2),16);
+						$("#printstate").html("停止");
+						break;
+					case getCRCCommond("D5021201",false)://开始获取文件
+						v="file";
+						console.log("==开始获取文件==");
+					case getCRCCommond("D5021200",false)://继续获取文件
+						v="file";
+						if(value == "D503810000C9"){//文件列表结尾，无文件
+							console.log("==结束获取文件==");
+							v="";
+							//显示文件列表
+							showFileList(files_list);
 							break;
-						case 1://空闲、完成打印
-							msg="空闲";
-							break;
-						case 2://被暂停
-							msg="暂停打印";
-							break;
-					}
-					$("#printstate").html(msg);
-					$("#stlfile").html("正在打印"+printing_file);
-					break;
-				default:
-					v="default";
-					break;
+						}
+						var filename=getFileName(value);
+						console.log(filename+"========文件======"+value);
+						//$("#stlfile").html(filename);
+						files_list.push(filename);
+						break;
+					case sendCRCFileName(printing_file)://打印文件
+						v= parseInt(value.substr(6,2),16);
+						print_state=v;
+						var msg="";
+						switch(v){
+							case 0://正在打印
+								msg="正在打印";
+								break;
+							case 1://空闲、完成打印
+								msg="空闲";
+								break;
+							case 2://被暂停
+								msg="暂停打印";
+								break;
+						}
+						$("#printstate").html(msg);
+						//$("#stlfile").html("正在打印"+printing_file);
+						break;
+				}
 			}
 			
 			//if(value == "D503810000C9"){
@@ -285,8 +293,14 @@ ul li {
 		
 		//添加指令
 		function addCommond(commond){
-			commondQueue.push(commond);
-			send2uart();
+			if(lastCommond == "" || commondQueue.length<=0){
+				commondQueue.unshift(commond);
+			}else{
+				var temp=commondQueue.shift();
+				commondQueue.unshift(commond);
+				commondQueue.unshift(temp);
+			}
+			//send2uart();
 		}
 		
 		//暂停
@@ -299,7 +313,7 @@ ul li {
 	   	//获取文件列表
 		function getFiles(){
 			var commond;
-			addCommond(getCRCCommond("D5010B",false));//查询打印状态
+			//addCommond(getCRCCommond("D5010B",false));//查询打印状态
 			switch(print_state){
 				case 0://正在打印
 				case 2://被暂停
@@ -310,7 +324,8 @@ ul li {
 					//获取文件列表
 					commond="D5021201";
 					break;
-			} 
+			}
+			
 			addCommond(getCRCCommond(commond,false));
 		}
 	   	//获取文件列表
@@ -318,6 +333,7 @@ ul li {
 		
 		function printFile(fileName){
 			addCommond(getCRCCommond("D5010B",false));//查询打印状态
+			send2uart();
 			if(print_state == 1){//空闲状态可以打印
 				addCommond(sendCRCFileName(fileName));
 				printing_file=fileName;
@@ -327,7 +343,7 @@ ul li {
 		//显示文件列表
 		function showFileList(alist){
 			for(var i=0;i<alist.length;i++){
-				var fileName=alist[i];
+				var fileName=alist[i].trim();
 				$("#file-list ul").append("<li><div data-role=\"collapsible\" data-collapsed=\"true\"><h1 name=\"filename\">"+fileName+"</h1><p> <a data-role=\"button\" name=\"printfile"+i+"\">打印</a> </p></div></li>");
 				$("a[name='printfile"+i+"']").bind('click',{name:fileName},function(e){
 						var fileName=e.data.name; 
@@ -353,6 +369,11 @@ ul li {
 		commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
 		commondQueue.push(getCRCCommond("D5010B",false));//打印状态
 		
+		if(print_state == 0){
+			commondQueue.push(getCRCCommond("D50114",false));//正在打印的文件
+			commondQueue.push(getCRCCommond("D5011D",false));//打印进度
+		}
+		
 		//计时器
 		timeer=setTimeout("timedCount()",8000);//毫秒
 	}
@@ -363,7 +384,7 @@ ul li {
 			fnSendCommond(commond);
 		}
 		//计时器
-		timeer2=setTimeout("timedCount2("+fnSendCommond+")",1000);//毫秒
+		timeer2=setTimeout("timedCount2("+fnSendCommond+")",800);//毫秒
 	}
 	/**定时发送指令*/	
 	

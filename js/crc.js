@@ -25,27 +25,31 @@ function getFileName(value){
 function sendCRCFileName(fileName){
 	//fileName=fileName+".x3g";//不带后缀
 	//获取长度
-	var result="D5"+getFormatNum(fileName.length+2,2,16)+"10";
+	var result=stringToHex(fileName);
+	//console.log(result);
 	//文件名UTF-8编码十六进制
-	result+=stringToHex(fileName);
+	result="D5"+getFormatNum(result.length/2+2,2,16)+"10"+result;
 	result+="00";
 	return (result+getTheCRC(result.substr(4))).toUpperCase();
 }
 
 //字符串转十六进制编码
 function stringToHex(str){
-　　　　var val="";
-　　　　for(var i = 0; i < str.length; i++){
-　　　　　　if(val == "")
-　　　　　　　　val = str.charCodeAt(i).toString(16);
-　　　　　　else
-　　　　　　　　val += str.charCodeAt(i).toString(16);
-　　　　}
-　　　　return val.toUpperCase();
-　　}
+	var val="";
+	for(var i = 0; i < str.length; i++){
+		if(str.charCodeAt(i)==0)
+			continue;
+		if(val == "")
+			val = str.charCodeAt(i).toString(16);
+		else
+			val += str.charCodeAt(i).toString(16);
+	}
+	return val.toUpperCase();
+}
 
 //var CRC=getUniCRC(value,carry,width,poly,refin,refout);
 function getTheCRC(value){
+	//console.log(value);
 	var result=getUniCRC(value,carry,width,poly,refin,refout);
 	return result.toUpperCase();
 }
@@ -55,20 +59,47 @@ function getTheCRC(value){
 //carry:进制
 //width：CRC宽度
 //poly:CRC二项式二进制字符串
+/**
 function getUniCRC(value,carry,width,poly,refin,refout){
 	var m=getZero(width);
 	if(value.length<2){
 		value='0'+value;
 	}
-	var cx2Str=parseInt(value,carry).toString(2)+m;
-	cx2Str=getRevert(value,carry,refin)+m;
+	var cx2Str=getRevert(value,carry,refin)+m;
 	var resouce=getCRC8(cx2Str,poly);
 	var CRC=parseInt(resouce,2).toString(16);
 	if(refout){
 		CRC=parseInt(resouce.split("").reverse().join(""),2).toString(16);
-	}
+	}	
 	return CRC;
 }
+*/
+
+function getUniCRC(data,carry,width){
+	var result=0;
+	//var str2=parseInt(data,carry).toString(2);
+	//console.log(data);
+	for(var i=0;i<data.length;){
+		//var temp=data.charCodeAt(i);
+		var temp=parseInt(data.substr(i,2),carry);
+		
+		temp=(temp>>>0)^result;
+		
+		for(var j=0;j<width;j++){
+			if(temp & 0x01 != 0){
+				temp=(temp>>1)^0x8c;
+			}else{
+				temp=(temp>>1)&0xff;
+			}
+		}
+		result=temp;
+		
+		i+=2;
+	}
+	return result.toString(16);
+}
+
+
 
 //获取比特数
 function getZero(num){
@@ -88,8 +119,9 @@ function getCRC8(cx2Str,gx2Str){
 		return result;
 	}else{
 		var temp=result.substr(0,gx2Str.length);
-		result=getMo2(temp,gx2Str)+result.substr(gx2Str.length);		
+		result=getMo2(temp,gx2Str)+result.substr(gx2Str.length);
 		result=getCRC8(result,gx2Str);
+
 	}
 	
 	result=zfill(parseInt(result,2),8);
@@ -102,7 +134,7 @@ function getRevert(init2,carry,refin){
 	if(refin){
 		for(var i=0;i<init2.length;){
 			var temp=zfill(parseInt(init2.substr(i,2),carry).toString(2),8);
-			result+=zfill(parseInt(init2.substr(i,2),carry).toString(2),8).split("").reverse().join("");
+			result+=temp.split("").reverse().join("");
 			i+=2;
 		}
 	}else{

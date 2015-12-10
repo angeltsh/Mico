@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>CRC生成</title>
+<script>
+
+
+var str="1063756265322E78336700";//字符串
+var carry=16;//进制
+
+
+console.log(getCRC(str,carry));
+
+
+/**
+* @data 初始数据
+* @carray 进制
+*/
+function getCRC(data,carry,width){
+	var result=0;
+	//var str2=parseInt(data,carry).toString(2);
+	console.log(data);
+
+	for(var i=0;i<data.length;){
+		//var temp=data.charCodeAt(i);
+		var temp=parseInt(data.substr(i,2),carry);
+		
+		temp=(temp>>>0)^result;
+		
+		for(var j=0;j<8;j++){
+			if(temp & 0x01 != 0){
+				temp=(temp>>1)^0x8c;
+			}else{
+				temp=(temp>>1)&0xff;
+			}
+		}
+		result=temp;
+		
+		i+=2;
+	}
+	return result.toString(16);
+}
+
+
+
+</script>
+</head>
+
+<body>
+</body>
+</html>
