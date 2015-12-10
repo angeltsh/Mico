@@ -93,11 +93,12 @@ ul li {
 	var ez_connect=ez_connect;
 	var print_state=-1;//打印状态 
 	var files_list=new Array();//文件列表
+	var sendItl=800; 
 	var current_file=null;//当前文件
 	var printing_file=null;//正在打印文件
 	var lastCommond="";//最后一次执行的命令
 	
-	device_id="555397aa/d0bae4001fdf";//网络测试数据
+	//device_id="555397aa/d0bae4001fdf";//网络测试数据
 	//device_id="555397aa/d0bae4003738";//本地测试数据
 	//current_file="test";//本地文件
 	//print_state=1;
@@ -222,9 +223,11 @@ ul li {
 					case getCRCCommond("D5021201",false)://开始获取文件
 						v="file";
 						console.log("==开始获取文件==");
+						sendItl=1200;
 					case getCRCCommond("D5021200",false)://继续获取文件
 						v="file";
 						if(value == "D503810000C9"){//文件列表结尾，无文件
+							sendItl=800;
 							console.log("==结束获取文件==");
 							v="";
 							//显示文件列表
@@ -243,6 +246,7 @@ ul li {
 						switch(v){
 							case 0://正在打印
 								msg="正在打印";
+								sendItl=800;
 								break;
 							case 1://空闲、完成打印
 								msg="空闲";
@@ -370,7 +374,7 @@ ul li {
 		}
 		
 		//计时器
-		timeer=setTimeout("timedCount()",8000);//毫秒
+		timeer=setTimeout("timedCount()",15000);//毫秒
 	}
 	
 	function timedCount2(fnSendCommond){
@@ -379,7 +383,7 @@ ul li {
 			fnSendCommond(commond);
 		}
 		//计时器
-		timeer2=setTimeout("timedCount2("+fnSendCommond+")",800);//毫秒
+		timeer2=setTimeout("timedCount2("+fnSendCommond+")",sendItl);//毫秒
 	}
 	/**定时发送指令*/	
 	
