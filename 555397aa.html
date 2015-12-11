@@ -98,7 +98,7 @@ ul li {
 	var printing_file=null;//正在打印文件
 	var lastCommond="";//最后一次执行的命令
 	
-	//device_id="555397aa/d0bae4001fdf";//网络测试数据
+	device_id="555397aa/d0bae4001fdf";//网络测试数据
 	//device_id="555397aa/d0bae4003738";//本地测试数据
 	//current_file="test";//本地文件
 	//print_state=1;
@@ -116,7 +116,18 @@ ul li {
         // access_token是公众号的全局唯一票据，公众号调用各接口时都需使用access_token。
         // 正常情况下access_token有效期为7200秒，重复获取将导致上次获取的access_token失效
         access_token = getParameterByName('access_token');
-		access_token="123456789012345678901234567890123456"
+		
+		
+		$.ajax({ 
+			type: "http://www.fogcloud.io/v2/users/tokens", 
+			url: "path", 
+			cache:false, 
+			async:false, 
+			success: function(data){ 
+				alert(data);
+			} 
+		});
+		
 		
         // websocket连接
         // wsbroker:host
@@ -378,15 +389,16 @@ ul li {
 	}
 	
 	function timedCount2(fnSendCommond){
-		var commond=commondQueue[0];
-		if("undefined" != typeof(commond)){
-			fnSendCommond(commond);
+		if(lastCommond==""){
+			var commond=commondQueue[0];
+			if("undefined" != typeof(commond)){
+				fnSendCommond(commond);
+			}
 		}
 		//计时器
 		timeer2=setTimeout("timedCount2("+fnSendCommond+")",sendItl);//毫秒
 	}
 	/**定时发送指令*/	
-	
 	
 
     // 日志打印在页面的部分
