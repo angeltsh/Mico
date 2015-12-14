@@ -98,7 +98,6 @@ ul li {
 	var current_file=null;//当前文件
 	var printing_file=null;//正在打印文件
 	var lastCommond="";//最后一次执行的命令
-	var resetNum=0;
 	
 	//device_id="555397aa/d0bae4001fdf";//网络测试数据
 	//device_id="555397aa/d0bae4003738";//本地测试数据
@@ -159,13 +158,7 @@ ul li {
         // 连接丢失
         function onConnectionLost(responseObject) {
             if (responseObject.errorCode !== 0){
-				if(resetNum<3){
-					console.log("onConnectionLost:"+responseObject.errorMessage+", reset...");
-					resetNum++;
-					ez_connect(device_id);
-				}else{
-					console.log("Lost!");
-				}
+                console.log("onConnectionLost:"+responseObject.errorMessage);
 			}
         }
 		
