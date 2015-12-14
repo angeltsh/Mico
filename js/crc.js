@@ -8,7 +8,10 @@ var refout=true;
 
 //获取返回的CRC信息码
 function getReturnCommond(message){
-	return message.substr((message.indexof(':')+1));
+	var result=new Object();
+	result.key=message.substr(0,message.indexOf(':'));
+	result.value=message.substr((message.indexOf(':')+1));
+	return result;
 }
 
 //获取文件名称

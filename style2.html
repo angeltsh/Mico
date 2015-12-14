@@ -73,15 +73,6 @@ ul li {
 <script src="./js/mqttws31.js"></script>
 <script src="./js/crc.js"></script>
 <script>
-	$.ajax({ 
-			type: "post", 
-			url: "http://www.fogcloud.io/v2/users/tokens",  
-			async:false, 
-			success: function(data){ 
-				alert(data);
-			} 
-		});
-
 <!--
 	var commondQueue=new Array();
 	
@@ -98,7 +89,7 @@ ul li {
     var device_id = getParameterByName('device_id');
 
 	var access_token;//微信token
-	var openid;//微信用户id
+	var clientID;//客户端识别号
 	var client;//客户端
 	var ez_connect=ez_connect;
 	var print_state=-1;//打印状态 
@@ -126,9 +117,6 @@ ul li {
         // access_token是公众号的全局唯一票据，公众号调用各接口时都需使用access_token。
         // 正常情况下access_token有效期为7200秒，重复获取将导致上次获取的access_token失效
         access_token = getParameterByName('access_token');
-		access_token="123456789012345678901234567890123456";
-		openid=getParameterByName('openid');
-		alert(openid);
 		
         // websocket连接
         // wsbroker:host
@@ -136,7 +124,8 @@ ul li {
         // Client-ID ： v1_web_[MAC]  //版本号_app_手机MAC(必须是12位小写)
         var wsbroker = "api.easylink.io";  //mqtt websocket enabled broker
         var wsport = 1983 // port for above
-        client = new Paho.MQTT.Client(wsbroker, wsport, "v1-web-" + parseInt(Math.random() * 1000000, 12));
+		clientID="v1-web-" + parseInt(Math.random() * 1000000, 12);
+        client = new Paho.MQTT.Client(wsbroker, wsport, clientID);
 
         // 基本参数配置
         // 连接丢失所对应的callback函数
@@ -176,10 +165,13 @@ ul li {
         // 消息到达
         function onMessageArrived(message) {
 	     	console.log('返回数据<--:' +  message.payloadString);	
-			var value=getReturnCommond(message.payloadString);		
-			//解析命令
-			analysis(value);
-			lastCommond="";
+			var result=getReturnCommond(message.payloadString);
+			
+			if(result.key=clientID){
+				//解析命令
+				analysis(result.value);
+				lastCommond="";
+			}
         }
 		function analysis(value){
 			var commond2=commondQueue[0];
@@ -297,7 +289,7 @@ ul li {
             var topic = device_id+'/in';
 			
 			var commond=commondQueue[0];
-			commond=access_token+":"+commond;
+			commond=clientID+":"+commond;
             
 			client.publish(topic, commond);
         }

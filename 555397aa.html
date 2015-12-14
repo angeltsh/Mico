@@ -165,10 +165,13 @@ ul li {
         // 消息到达
         function onMessageArrived(message) {
 	     	console.log('返回数据<--:' +  message.payloadString);	
-			var value=getReturnCommond(message.payloadString);		
-			//解析命令
-			analysis(value);
-			lastCommond="";
+			var result=getReturnCommond(message.payloadString);
+			
+			if(result.key=clientID){
+				//解析命令
+				analysis(result.value);
+				lastCommond="";
+			}
         }
 		function analysis(value){
 			var commond2=commondQueue[0];
