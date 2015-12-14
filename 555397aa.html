@@ -124,7 +124,8 @@ ul li {
         // Client-ID ： v1_web_[MAC]  //版本号_app_手机MAC(必须是12位小写)
         var wsbroker = "api.easylink.io";  //mqtt websocket enabled broker
         var wsport = 1983 // port for above
-		clientID="v1-web-" + parseInt(Math.random() * 1000000, 12);
+		//clientID="v1-web-" + parseInt(Math.random() * 1000000, 12);
+		clientID="v1-web-12345";
         client = new Paho.MQTT.Client(wsbroker, wsport, clientID);
 
         // 基本参数配置
