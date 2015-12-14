@@ -58,5 +58,20 @@ function log(txt){
 	console.log(txt);
 }
 
+
+$.ajax({  
+	 url: 'http://www.fogcloud.io/v2/users/tokens',  
+	 type: 'POST',  
+	 dataType: 'json',
+	 async:false, 
+	 timeout: 1000,  
+	 cache: false,  
+	 beforeSend: LoadFunction, //加载执行方法    
+	 error: function(){alert('test')},  //错误执行方法    
+	 success: function(){//成功执行方法
+		alert('test');
+	 }
+})  
+
 </script>
 </html>

@@ -73,6 +73,15 @@ ul li {
 <script src="./js/mqttws31.js"></script>
 <script src="./js/crc.js"></script>
 <script>
+	$.ajax({ 
+			type: "post", 
+			url: "http://www.fogcloud.io/v2/users/tokens",  
+			async:false, 
+			success: function(data){ 
+				alert(data);
+			} 
+		});
+
 <!--
 	var commondQueue=new Array();
 	
@@ -89,6 +98,7 @@ ul li {
     var device_id = getParameterByName('device_id');
 
 	var access_token;//微信token
+	var openid;//微信用户id
 	var client;//客户端
 	var ez_connect=ez_connect;
 	var print_state=-1;//打印状态 
@@ -116,17 +126,9 @@ ul li {
         // access_token是公众号的全局唯一票据，公众号调用各接口时都需使用access_token。
         // 正常情况下access_token有效期为7200秒，重复获取将导致上次获取的access_token失效
         access_token = getParameterByName('access_token');
-		
-		
-		$.ajax({ 
-			type: "post", 
-			url: "http://www.fogcloud.io/v2/users/tokens",  
-			async:false, 
-			success: function(data){ 
-				alert(data);
-			} 
-		});
-		
+		access_token="123456789012345678901234567890123456";
+		openid=getParameterByName('openid');
+		alert(openid);
 		
         // websocket连接
         // wsbroker:host
@@ -388,16 +390,15 @@ ul li {
 	}
 	
 	function timedCount2(fnSendCommond){
-		if(lastCommond==""){
-			var commond=commondQueue[0];
-			if("undefined" != typeof(commond)){
-				fnSendCommond(commond);
-			}
+		var commond=commondQueue[0];
+		if("undefined" != typeof(commond)){
+			fnSendCommond(commond);
 		}
 		//计时器
 		timeer2=setTimeout("timedCount2("+fnSendCommond+")",sendItl);//毫秒
 	}
 	/**定时发送指令*/	
+	
 	
 
     // 日志打印在页面的部分

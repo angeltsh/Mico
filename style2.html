@@ -73,6 +73,15 @@ ul li {
 <script src="./js/mqttws31.js"></script>
 <script src="./js/crc.js"></script>
 <script>
+	$.ajax({ 
+			type: "post", 
+			url: "http://www.fogcloud.io/v2/users/tokens",  
+			async:false, 
+			success: function(data){ 
+				alert(data);
+			} 
+		});
+
 <!--
 	var commondQueue=new Array();
 	
@@ -89,6 +98,7 @@ ul li {
     var device_id = getParameterByName('device_id');
 
 	var access_token;//微信token
+	var openid;//微信用户id
 	var client;//客户端
 	var ez_connect=ez_connect;
 	var print_state=-1;//打印状态 
@@ -99,7 +109,7 @@ ul li {
 	var lastCommond="";//最后一次执行的命令
 	
 	//device_id="555397aa/d0bae4001fdf";//网络测试数据
-	device_id="555397aa/d0bae4003738";//本地测试数据
+	//device_id="555397aa/d0bae4003738";//本地测试数据
 	//current_file="test";//本地文件
 	//print_state=1;
 	
@@ -116,7 +126,9 @@ ul li {
         // access_token是公众号的全局唯一票据，公众号调用各接口时都需使用access_token。
         // 正常情况下access_token有效期为7200秒，重复获取将导致上次获取的access_token失效
         access_token = getParameterByName('access_token');
-		access_token="123456789012345678901234567890123456"
+		access_token="123456789012345678901234567890123456";
+		openid=getParameterByName('openid');
+		alert(openid);
 		
         // websocket连接
         // wsbroker:host
