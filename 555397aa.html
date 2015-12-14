@@ -73,15 +73,6 @@ ul li {
 <script src="./js/mqttws31.js"></script>
 <script src="./js/crc.js"></script>
 <script>
-	$.ajaxSetup({
-		async: false
-	});
-	var html=$.ajax({ 
-			type: "post", 
-			url: "http://www.fogcloud.io/v2/users/tokens"
-		}).respnseText;
-	alert(html);
-
 <!--
 	var commondQueue=new Array();
 	
@@ -91,7 +82,6 @@ ul li {
 	
     // 从url中获取某个参数的值
     function getParameterByName(name) {
-		alert(window.location);
         var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
         return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
     }
