@@ -73,14 +73,14 @@ ul li {
 <script src="./js/mqttws31.js"></script>
 <script src="./js/crc.js"></script>
 <script>
-	$.ajax({ 
+	$.ajaxSetup({
+		async: false
+	});
+	var html=$.ajax({ 
 			type: "post", 
-			url: "http://www.fogcloud.io/v2/users/tokens",  
-			async:false, 
-			success: function(data){ 
-				alert(data);
-			} 
-		});
+			url: "http://www.fogcloud.io/v2/users/tokens"
+		}).respnseText;
+	alert(html);
 
 <!--
 	var commondQueue=new Array();
@@ -128,8 +128,6 @@ ul li {
         // 正常情况下access_token有效期为7200秒，重复获取将导致上次获取的access_token失效
         access_token = getParameterByName('access_token');
 		access_token="123456789012345678901234567890123456";
-		openid=getParameterByName('openid');
-		alert(openid);
 		
         // websocket连接
         // wsbroker:host
