@@ -91,6 +91,7 @@ ul li {
 	
     // 从url中获取某个参数的值
     function getParameterByName(name) {
+		alert(window.location);
         var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
         return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
     }
