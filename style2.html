@@ -166,7 +166,7 @@ ul li {
 	     	console.log('返回数据<--:' +  message.payloadString);	
 			var result=getReturnCommond(message.payloadString);
 			
-			if(result.key=clientID){
+			if(result.key==clientID){
 				//解析命令
 				analysis(result.value);
 				lastCommond="";
@@ -383,7 +383,7 @@ ul li {
 			fnSendCommond(commond);
 		}
 		//计时器
-		timeer2=setTimeout("timedCount2("+fnSendCommond+")",800);//毫秒
+		timeer2=setTimeout("timedCount2("+fnSendCommond+")",1000);//毫秒
 	}
 	/**定时发送指令*/	
 	

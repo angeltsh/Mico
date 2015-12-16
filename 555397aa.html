@@ -98,7 +98,7 @@ ul li {
 	var printing_file=null;//正在打印文件
 	var lastCommond="";//最后一次执行的命令
 	
-	//device_id="555397aa/d0bae4001fdf";//网络测试数据
+	device_id="555397aa/d0bae4001fdf";//网络测试数据
 	//device_id="555397aa/d0bae4003738";//本地测试数据
 	//current_file="test";//本地文件
 	//print_state=1;
@@ -163,10 +163,9 @@ ul li {
 		
         // 消息到达
         function onMessageArrived(message) {
-	     	console.log('返回数据<--:' +  message.payloadString);	
-			var result=getReturnCommond(message.payloadString);
-			
-			if(result.key=clientID){
+			var result=getReturnCommond(message.payloadString);	
+			if(result.key == clientID){
+				console.log('返回数据<--:' +  message.payloadString);	
 				//解析命令
 				analysis(result.value);
 				lastCommond="";
@@ -383,11 +382,9 @@ ul li {
 			fnSendCommond(commond);
 		}
 		//计时器
-		timeer2=setTimeout("timedCount2("+fnSendCommond+")",800);//毫秒
+		timeer2=setTimeout("timedCount2("+fnSendCommond+")",1200);//毫秒
 	}
 	/**定时发送指令*/	
-	
-	
 
     // 日志打印在页面的部分
     var i = 0;
@@ -415,7 +412,6 @@ ul li {
 	function debug(txt){
 		console.log(txt);
 	}
-
 
 // -->
 </script>

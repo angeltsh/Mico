@@ -64,6 +64,8 @@
     }
     // 得到设备ID
     var device_id = getParameterByName('device_id');
+	device_id="555397aa/d0bae4001fdf";//网络测试数据
+	
     // 如果设备ID不为空，则执行连接MQTT的操作
     if ( device_id !== null ){
         ez_connect(device_id);

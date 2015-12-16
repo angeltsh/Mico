@@ -495,7 +495,7 @@ Paho.MQTT = (function (global) {
                     message.duplicate =  true;
                 message.qos = qos;
                 message.destinationName = topicName;
-                wireMessage.payloadMessage = message;   
+                wireMessage.payloadMessage = message;
                 break;
             
             case  MESSAGE_TYPE.PUBACK:
