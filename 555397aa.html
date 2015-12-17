@@ -224,7 +224,7 @@ ul li {
 						v= parseInt(value.substr(6,2),16);
 						$("#printstate").html("停止");
 						break;
-					case getCRCCommond("D5011E",false)://获取文件打印状态
+					case getCRCCommond("D5011E",false)://文件列表是否可获取
 						v="fstate";
 						console.log(v);
 						var state=parseInt(value.substr(6,2),16);
@@ -247,9 +247,15 @@ ul li {
 							break;
 						}
 						var filename=getFileName(value);
-						console.log(filename+"========文件======"+value);
+						//console.log(filename+"========文件======"+value);
 						//$("#stlfile").html(filename);
 						files_list.push(filename);
+						break;
+					case getCRCCommond("D5011F",false):
+						v='control';
+						if(value == getCRCCommond("D50181",false)){
+							v='release';
+						}
 						break;
 					case sendCRCFileName(printing_file)://打印文件
 						v= parseInt(value.substr(6,2),16);
