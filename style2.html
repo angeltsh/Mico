@@ -365,6 +365,7 @@ ul li {
 			
 		//显示文件列表
 		function showFileList(alist){
+			$("#file-list ul").html("");
 			for(var i=0;i<alist.length;i++){
 				var fileName=alist[i].trim();
 				$("#file-list ul").append("<li><div data-role=\"collapsible\" data-collapsed=\"true\"><h1 name=\"filename\">"+fileName+"</h1><p> <a data-role=\"button\" name=\"printfile"+i+"\">打印</a> </p></div></li>");
