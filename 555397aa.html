@@ -93,6 +93,7 @@ ul li {
 	var client;//客户端
 	var ez_connect=ez_connect;
 	var print_state=-1;//打印状态 
+	var files_state;//文件列表是否为可获取
 	var files_list=new Array();//文件列表
 	var current_file=null;//当前文件
 	var printing_file=null;//正在打印文件
@@ -171,10 +172,11 @@ ul li {
 				lastCommond="";
 			}
         }
+		
 		function analysis(value){
 			var commond2=commondQueue[0];
 			var v="default";
-			if(value!="error"){
+			if(value!="error" && confirmCRC(value)){
 				switch (commond2) {
 					case getCRCCommond("D5030A0102",false)://左头
 						v= parseInt(revert(value.substr(6,4)),16);
@@ -222,6 +224,16 @@ ul li {
 						v= parseInt(value.substr(6,2),16);
 						$("#printstate").html("停止");
 						break;
+					case getCRCCommond("D5011E",false)://获取文件打印状态
+						v="fstate";
+						console.log(v);
+						var state=parseInt(value.substr(6,2),16);
+						if(state==0){	
+							files_state=true;
+						}else{
+							files_state=false;
+						}
+						break;
 					case getCRCCommond("D5021201",false)://开始获取文件
 						v="file";
 						console.log("==开始获取文件==");
@@ -229,7 +241,7 @@ ul li {
 						v="file";
 						if(value == "D503810000C9"){//文件列表结尾，无文件
 							console.log("==结束获取文件==");
-							v="";
+							v="fend";
 							//显示文件列表
 							showFileList(files_list);
 							break;
@@ -269,9 +281,19 @@ ul li {
 			
 			
 			if(v == "default"){//未收到正确回复指令
+			}else if(v == 'fstate'){//文件列表可获取
+				commondQueue.shift();
+				if(files_state){//可以获取文件	
+					addCommond(getCRCCommond("D5021201",false));
+				}else{
+					console.log("文件列表暂时无法获取，请稍后再试。");
+				}
 			}else if(v == "file"){//未完成文件列表获取，继续获取
 				commondQueue.shift();
 				addCommond(getCRCCommond("D5021200",false));
+			}else if(v == 'fend'){
+				commondQueue.shift();
+				addCommond(getCRCCommond("D5011F",false));
 			}else{//返回正确指令，删除整体指令，并执行下一条
 				commondQueue.shift();
 			}
@@ -318,12 +340,9 @@ ul li {
 					//获取打印百分比
 					commond="D5011D";
 					break;
-				case 1://空闲、完成打印
-					//获取文件列表
-					commond="D5021201";
-					break;
+				case 1://空闲，查询文件列表是否处于可获取状态
+					addCommond(getCRCCommond("D5011E",false));
 			}
-			
 			addCommond(getCRCCommond(commond,false));
 		}
 	   	//获取文件列表
@@ -382,9 +401,11 @@ ul li {
 			fnSendCommond(commond);
 		}
 		//计时器
-		timeer2=setTimeout("timedCount2("+fnSendCommond+")",1200);//毫秒
+		timeer2=setTimeout("timedCount2("+fnSendCommond+")",1000);//毫秒
 	}
 	/**定时发送指令*/	
+	
+	
 
     // 日志打印在页面的部分
     var i = 0;
@@ -412,6 +433,7 @@ ul li {
 	function debug(txt){
 		console.log(txt);
 	}
+
 
 // -->
 </script>

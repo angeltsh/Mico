@@ -5,8 +5,15 @@ var width=8;
 var refin=true;
 var refout=true;
 
+function confirmCRC(commond){
+	var str=commond.substr(0,commond.length-2);
+	if(getCRCCommond(str,false) == commond){
+		return true;
+	}
+	return false;
+}
 
-//获取返回的CRC信息码
+//获取返回的指令对象
 function getReturnCommond(message){
 	var result=new Object();
 	result.key=message.substr(0,message.indexOf(':'));
