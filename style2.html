@@ -226,7 +226,6 @@ ul li {
 						break;
 					case getCRCCommond("D5011E",false)://文件列表是否可获取
 						v="fstate";
-						console.log(v);
 						var state=parseInt(value.substr(6,2),16);
 						if(state==0){	
 							files_state=true;
@@ -244,12 +243,12 @@ ul li {
 							v="fend";
 							//显示文件列表
 							showFileList(files_list);
-							break;
+						}else{						
+							var filename=getFileName(value);
+							//console.log(filename+"========文件======"+value);
+							//$("#stlfile").html(filename);
+							files_list.push(filename);
 						}
-						var filename=getFileName(value);
-						//console.log(filename+"========文件======"+value);
-						//$("#stlfile").html(filename);
-						files_list.push(filename);
 						break;
 					case getCRCCommond("D5011F",false):
 						v='control';
@@ -365,7 +364,7 @@ ul li {
 			
 		//显示文件列表
 		function showFileList(alist){
-			$("#file-list ul").html("");
+			$("#file-list ul li").empty();
 			for(var i=0;i<alist.length;i++){
 				var fileName=alist[i].trim();
 				$("#file-list ul").append("<li><div data-role=\"collapsible\" data-collapsed=\"true\"><h1 name=\"filename\">"+fileName+"</h1><p> <a data-role=\"button\" name=\"printfile"+i+"\">打印</a> </p></div></li>");
