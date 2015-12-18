@@ -202,6 +202,10 @@ ul li {
 							$("#pt").html(v);
 						}
 						break;
+					case getCRCCommond("D5028100",false):
+						v="";
+						console.log("正在打印......");
+						break;
 					case getCRCCommond("D50114",false)://获取正在打印的文件名
 						v="";
 						var filename=getFileName(value);
