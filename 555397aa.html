@@ -112,7 +112,7 @@ ul li {
     }
 
     // 连接MQTT服务
-   function ez_connect(device_id) {
+   	function ez_connect(device_id) {
         // 获取access_token
         // access_token是公众号的全局唯一票据，公众号调用各接口时都需使用access_token。
         // 正常情况下access_token有效期为7200秒，重复获取将导致上次获取的access_token失效
@@ -160,6 +160,7 @@ ul li {
             if (responseObject.errorCode !== 0){
 				//与设备已断开连接，请重新链接，responseObject.errorMessage
                 console.log("与设备已断开连接，请重新连接。");
+				
 			}
         }
 		
