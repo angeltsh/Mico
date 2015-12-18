@@ -159,8 +159,8 @@ ul li {
         function onConnectionLost(responseObject) {
             if (responseObject.errorCode !== 0){
 				//与设备已断开连接，请重新链接，responseObject.errorMessage
-                console.log("与设备已断开连接，请重新连接。");
-				
+                console.log("与设备已断开连接，重新连接中.....");
+				ez_connect(device_id); 
 			}
         }
 		
@@ -182,15 +182,21 @@ ul li {
 				switch (commond2) {
 					case getCRCCommond("D5030A0102",false)://左头
 						v= parseInt(revert(value.substr(6,4)),16);
-						$("#lt").html(v);
+						if(v<1000){
+							$("#lt").html(v);
+						}
 						break;
 					case getCRCCommond("D5030A0002",false)://右头
 						v= parseInt(revert(value.substr(6,4)),16);
-						$("#rt").html(v);
+						if(v<1000){
+							$("#rt").html(v);
+						}
 						break;
 					case getCRCCommond("D5030A001E",false)://底板
 						v= parseInt(revert(value.substr(6,4)),16);
-						$("#pt").html(v);
+						if(v<1000){
+							$("#pt").html(v);
+						}
 						break;
 					case getCRCCommond("D50114",false)://获取正在打印的文件名
 						v="";
@@ -199,7 +205,9 @@ ul li {
 						break;
 					case getCRCCommond("D5011D",false)://获取打印百分比
 						v= parseInt(value.substr(2*3,2),16);
-						$("#ppercent").html("打印百分比："+v+"%");
+						if(v<1000){
+							$("#ppercent").html("打印百分比："+v+"%");
+						}
 						break;
 					case getCRCCommond("D5010B",false)://打印状态
 						v= parseInt(value.substr(6,2),16);
