@@ -143,14 +143,14 @@ ul li {
             // topic：通道
             // commond：指令
             client.publish = function(topic, commond) {
-                //console.log("现在执行-->:"+commond);
+                console.log("现在执行-->:"+commond);
 				lastCommond=commond;//最后一次执行的命令
                 message = new Paho.MQTT.Message(commond);
                 message.destinationName = topic;
                 client.send(message);
             }
            	//console.log("device_id:"+device_id);
-            console.log("连接成功");
+            console.log("连接成功。");
             client.subscribe(subtopic, {qos: 0});
 			timedCount();
 			timedCount2(send2uart);
@@ -159,7 +159,7 @@ ul li {
         function onConnectionLost(responseObject) {
             if (responseObject.errorCode !== 0){
 				//与设备已断开连接，请重新链接，responseObject.errorMessage
-                console.log("与设备已断开连接，请重新链接");
+                console.log("与设备已断开连接，请重新连接。");
 			}
         }
 		
@@ -167,7 +167,7 @@ ul li {
         function onMessageArrived(message) {
 			var result=getReturnCommond(message.payloadString);	
 			if(result.key == clientID){
-				//console.log('返回数据<--:' +  message.payloadString);	
+				console.log('返回数据<--:' +  message.payloadString);	
 				//解析命令
 				analysis(result.value);
 				lastCommond="";
@@ -300,7 +300,6 @@ ul li {
         //var inputMessage = document.getElementById('message');
         // 将消息发送到指定的通道
       	function send2uart() {
-            var topic = device_id+'/in';
             var topic = device_id+'/in';		
 			var commond=commondQueue[0];
 			commond=clientID+":"+commond; 
@@ -398,7 +397,7 @@ ul li {
 			fnSendCommond(commond);
 		}
 		//计时器
-		timeer2=setTimeout("timedCount2("+fnSendCommond+")",1000);//毫秒
+		timeer2=setTimeout("timedCount2("+fnSendCommond+")",800);//毫秒
 	}
 	/**定时发送指令*/	
 
