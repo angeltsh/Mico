@@ -209,7 +209,7 @@ ul li {
 					case getCRCCommond("D50114",false)://获取正在打印的文件名
 						v="";
 						var filename=getFileName(value);
-						$("#stlfile").html("正在打印"+filename);
+						$("#stlfile").html("打印文件："+filename);
 						break;
 					case getCRCCommond("D5011D",false)://获取打印百分比
 						v= parseInt(value.substr(2*3,2),16);
