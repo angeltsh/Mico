@@ -98,6 +98,7 @@ ul li {
 	var current_file=null;//当前文件
 	var printing_file=null;//正在打印文件
 	var lastCommond="";//最后一次执行的命令
+	var isStartTimer=false;
 	
 	//device_id="555397aa/d0bae4001fdf";//网络测试数据
 	//device_id="555397aa/d0bae4003738";//本地测试数据
@@ -152,8 +153,11 @@ ul li {
            	//console.log("device_id:"+device_id);
             console.log("连接成功。");
             client.subscribe(subtopic, {qos: 0});
-			timedCount();
-			timedCount2(send2uart);
+			if(!isStartTimer){//首次启动计时器
+				isStartTimer=true;
+				timedCount();
+				timedCount2(send2uart);
+			}
         }
         // 连接丢失
         function onConnectionLost(responseObject) {
