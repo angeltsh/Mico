@@ -143,14 +143,14 @@ ul li {
             // topic：通道
             // commond：指令
             client.publish = function(topic, commond) {
-                //console.log("现在执行-->:"+commond);
+                console.log("现在执行-->:"+commond);
 				lastCommond=commond;//最后一次执行的命令
                 message = new Paho.MQTT.Message(commond);
                 message.destinationName = topic;
                 client.send(message);
             }
            	//console.log("device_id:"+device_id);
-            console.log("连接成功");
+            console.log("连接成功。");
             client.subscribe(subtopic, {qos: 0});
 			timedCount();
 			timedCount2(send2uart);
@@ -159,7 +159,7 @@ ul li {
         function onConnectionLost(responseObject) {
             if (responseObject.errorCode !== 0){
 				//与设备已断开连接，请重新链接，responseObject.errorMessage
-                console.log("与设备已断开连接，请重新链接");
+                console.log("与设备已断开连接，请重新连接。");
 			}
         }
 		
@@ -167,7 +167,7 @@ ul li {
         function onMessageArrived(message) {
 			var result=getReturnCommond(message.payloadString);	
 			if(result.key == clientID){
-				//console.log('返回数据<--:' +  message.payloadString);	
+				console.log('返回数据<--:' +  message.payloadString);	
 				//解析命令
 				analysis(result.value);
 				lastCommond="";
@@ -388,7 +388,7 @@ ul li {
 		}
 		
 		//计时器
-		timeer=setTimeout("timedCount()",15000);//毫秒
+		timeer=setTimeout("timedCount()",3000);//毫秒
 	}
 	
 	function timedCount2(fnSendCommond){
@@ -397,27 +397,20 @@ ul li {
 			fnSendCommond(commond);
 		}
 		//计时器
-		timeer2=setTimeout("timedCount2("+fnSendCommond+")",1000);//毫秒
+		timeer2=setTimeout("timedCount2("+fnSendCommond+")",800);//毫秒
 	}
 	/**定时发送指令*/	
-	
-	
 
     // 日志打印在页面的部分
     var i = 0;
     console.log = (function(old_funct, div_log) {
         return function(text) {
             old_funct(text);
-            var p = '';
-            //if (i%2 == 0)
-            //    p = '<p>';
-            //else
-                p = '<p class=\'gray\'>';
-
+            var p = '<p class=\'gray\'>';
             if (typeof text === "object")
                 div_log.innerHTML += p + JSON.stringify(text) + '</p>';
             else
-                div_log.innerHTML += p + text + '</p>';
+                div_log.innerHTML += p+ getNowFormatDate()+": " + text + '</p>';
 
             div_log.scrollTop = div_log.scrollHeight;
             i += 1;
@@ -429,7 +422,6 @@ ul li {
 	function debug(txt){
 		console.log(txt);
 	}
-
 
 // -->
 </script>
