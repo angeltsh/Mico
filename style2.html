@@ -143,14 +143,14 @@ ul li {
             // topic：通道
             // commond：指令
             client.publish = function(topic, commond) {
-                console.log("现在执行-->:"+commond);
+                //console.log("现在执行-->:"+commond);
 				lastCommond=commond;//最后一次执行的命令
                 message = new Paho.MQTT.Message(commond);
                 message.destinationName = topic;
                 client.send(message);
             }
            	//console.log("device_id:"+device_id);
-            console.log("onConnect");
+            console.log("连接成功");
             client.subscribe(subtopic, {qos: 0});
 			timedCount();
 			timedCount2(send2uart);
@@ -158,7 +158,8 @@ ul li {
         // 连接丢失
         function onConnectionLost(responseObject) {
             if (responseObject.errorCode !== 0){
-                console.log("onConnectionLost:"+responseObject.errorMessage);
+				//与设备已断开连接，请重新链接，responseObject.errorMessage
+                console.log("与设备已断开连接，请重新链接");
 			}
         }
 		
@@ -166,7 +167,7 @@ ul li {
         function onMessageArrived(message) {
 			var result=getReturnCommond(message.payloadString);	
 			if(result.key == clientID){
-				console.log('返回数据<--:' +  message.payloadString);	
+				//console.log('返回数据<--:' +  message.payloadString);	
 				//解析命令
 				analysis(result.value);
 				lastCommond="";
@@ -235,18 +236,17 @@ ul li {
 						break;
 					case getCRCCommond("D5021201",false)://开始获取文件
 						v="file";
-						console.log("==开始获取文件==");
+						console.log("正在获取文件列表......");
+						files_list=new Array();
 					case getCRCCommond("D5021200",false)://继续获取文件
 						v="file";
 						if(value == "D503810000C9"){//文件列表结尾，无文件
-							console.log("==结束获取文件==");
+							console.log("成功获取文件列表");
 							v="fend";
 							//显示文件列表
 							showFileList(files_list);
 						}else{						
 							var filename=getFileName(value);
-							//console.log(filename+"========文件======"+value);
-							//$("#stlfile").html(filename);
 							files_list.push(filename);
 						}
 						break;
@@ -275,15 +275,7 @@ ul li {
 						//$("#stlfile").html("正在打印"+printing_file);
 						break;
 				}
-			}
-			
-			//if(value == "D503810000C9"){
-//				document.getElementById("tempid4").innerHTML="OK";
-//			}else{
-//				send2uart("D50212007D",true);
-//				document.getElementById("tempid4").innerHTML=getFileName(value);
-//			}
-			
+			}	
 			
 			if(v == "default"){//未收到正确回复指令
 			}else if(v == 'fstate'){//文件列表可获取
@@ -309,10 +301,9 @@ ul li {
         // 将消息发送到指定的通道
       	function send2uart() {
             var topic = device_id+'/in';
-			
+            var topic = device_id+'/in';		
 			var commond=commondQueue[0];
-			commond=clientID+":"+commond;
-            
+			commond=clientID+":"+commond; 
 			client.publish(topic, commond);
         }
 		
@@ -398,7 +389,7 @@ ul li {
 		}
 		
 		//计时器
-		timeer=setTimeout("timedCount()",15000);//毫秒
+		timeer=setTimeout("timedCount()",3000);//毫秒
 	}
 	
 	function timedCount2(fnSendCommond){
@@ -410,24 +401,17 @@ ul li {
 		timeer2=setTimeout("timedCount2("+fnSendCommond+")",1000);//毫秒
 	}
 	/**定时发送指令*/	
-	
-	
 
     // 日志打印在页面的部分
     var i = 0;
     console.log = (function(old_funct, div_log) {
         return function(text) {
             old_funct(text);
-            var p = '';
-            //if (i%2 == 0)
-            //    p = '<p>';
-            //else
-                p = '<p class=\'gray\'>';
-
+            var p = '<p class=\'gray\'>';
             if (typeof text === "object")
                 div_log.innerHTML += p + JSON.stringify(text) + '</p>';
             else
-                div_log.innerHTML += p + text + '</p>';
+                div_log.innerHTML += p+ getNowFormatDate()+": " + text + '</p>';
 
             div_log.scrollTop = div_log.scrollHeight;
             i += 1;
@@ -439,7 +423,6 @@ ul li {
 	function debug(txt){
 		console.log(txt);
 	}
-
 
 // -->
 </script>
