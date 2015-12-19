@@ -353,12 +353,15 @@ ul li {
 			//addCommond(getCRCCommond("D5010B",false));//查询打印状态
 			switch(print_state){
 				case 0://正在打印
+					console.log("文件列表暂时无法获取，请稍后再试。");
+					break;
 				case 2://被暂停
 					//获取打印百分比
 					commond="D5011D";
 					break;
 				case 1://空闲，查询文件列表是否处于可获取状态
 					addCommond(getCRCCommond("D5011E",false));
+					break;
 			}
 			addCommond(getCRCCommond(commond,false));
 		}
