@@ -98,6 +98,8 @@ ul li {
 	var printing_file=null;//正在打印文件
 	var lastCommond="";//最后一次执行的命令
 	var isStartTimer=false;
+	var chooseprint=false;//是否打印文件
+	
 	
 	device_id="555397aa/d0bae4001fdf";//网络测试数据
 	//device_id="555397aa/d0bae4003738";//本地测试数据
@@ -124,7 +126,10 @@ ul li {
         // Client-ID ： v1_web_[MAC]  //版本号_app_手机MAC(必须是12位小写)
         var wsbroker = "api.easylink.io";  //mqtt websocket enabled broker
         var wsport = 1983 // port for above
-		clientID="v1web" + parseInt(Math.random() * 1000000, 12);
+		
+		if(clientID == null || clientID.trim ==""){
+			clientID="v1web" + parseInt(Math.random() * 1000000, 12);
+		}
         client = new Paho.MQTT.Client(wsbroker, wsport, clientID);
 
         // 基本参数配置
@@ -226,6 +231,10 @@ ul li {
 								break;
 							case 1://空闲、完成打印
 								msg="空闲";
+								if(chooseprint){
+									addCommond(sendCRCFileName(printing_file));
+									chooseprint=false;
+								}
 								$("#stlfile").html('');
 								$("#ppercent").html('');
 								break;
@@ -329,14 +338,15 @@ ul li {
 		
 		//添加指令
 		function addCommond(commond){
-			if(lastCommond == "" || commondQueue.length<=0){
-				commondQueue.unshift(commond);
-			}else{
-				var temp=commondQueue.shift();
-				commondQueue.unshift(commond);
-				commondQueue.unshift(temp);
+			if(commond.trim() != ''){
+				if(lastCommond == "" || commondQueue.length<=0){
+					commondQueue.unshift(commond);
+				}else{
+					var temp=commondQueue.shift();
+					commondQueue.unshift(commond);
+					commondQueue.unshift(temp);
+				}
 			}
-			//send2uart();
 		}
 		
 		//暂停
@@ -357,7 +367,7 @@ ul li {
 					commond="D5011D";
 					break;
 				case 1://空闲，查询文件列表是否处于可获取状态
-					addCommond(getCRCCommond("D5011E",false));
+					commond="D5011E";
 			}
 			addCommond(getCRCCommond(commond,false));
 		}
@@ -366,11 +376,8 @@ ul li {
 		
 		function printFile(fileName){
 			addCommond(getCRCCommond("D5010B",false));//查询打印状态
-			send2uart();
-			if(print_state == 1){//空闲状态可以打印
-				addCommond(sendCRCFileName(fileName));
-				printing_file=fileName;
-			}
+			chooseprint=true;
+			printing_file=fileName;
 		}
 			
 		//显示文件列表
