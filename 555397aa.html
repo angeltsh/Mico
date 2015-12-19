@@ -45,9 +45,8 @@ ul li {
       <div class="ui-block-b"> 左头：<span id="lt"></span>℃<br/>
         右头：<span id="rt"></span>℃<br/>
         底板：<span id="pt"></span>℃<br/>
-        状态：<span id="printstate"></span><br/>
+        状态：<span id="printstate"></span><span id="stlfile"></span><br/>
         <span id="ppercent"></span><br/>
-        <span id="stlfile"></span> <br/>
       </div>
     </div>
     <div id="file-list" data-role="collapsible" data-collapsed="false">
@@ -143,6 +142,7 @@ ul li {
             // 向某个通道发送指令
             // topic：通道
             // commond：指令
+
             client.publish = function(topic, commond) {
                 console.log("现在执行-->:"+commond);
 				lastCommond=commond;//最后一次执行的命令
@@ -209,12 +209,12 @@ ul li {
 					case getCRCCommond("D50114",false)://获取正在打印的文件名
 						v="";
 						var filename=getFileName(value);
-						$("#stlfile").html("正在打印"+filename);
+						$("#stlfile").html(filename);
 						break;
 					case getCRCCommond("D5011D",false)://获取打印百分比
 						v= parseInt(value.substr(2*3,2),16);
 						if(v<1000){
-							$("#ppercent").html("打印百分比："+v+"%");
+							$("#ppercent").html("打印进度："+v+"%");
 						}
 						break;
 					case getCRCCommond("D5010B",false)://打印状态
@@ -264,7 +264,10 @@ ul li {
 							showFileList(files_list);
 						}else{						
 							var filename=getFileName(value);
-							files_list.push(filename);
+							
+							if(filename.trim() != ''){
+								files_list.push(filename);
+							}
 						}
 						break;
 					case getCRCCommond("D5011F",false):
@@ -412,7 +415,7 @@ ul li {
 	function timedCount2(fnSendCommond){
 		var commond=commondQueue[0];
 		if("undefined" != typeof(commond)){
-			console.log("========");
+			//console.log("========");
 			fnSendCommond(commond);
 		}
 		//计时器
