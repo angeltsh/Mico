@@ -227,6 +227,8 @@ ul li {
 								break;
 							case 1://空闲、完成打印
 								msg="空闲";
+								$("#stlfile").html('');
+								$("#ppercent").html('');
 								break;
 							case 2://被暂停
 								msg="暂停打印";
@@ -427,6 +429,7 @@ ul li {
     var i = 0;
     console.log = (function(old_funct, div_log) {
         return function(text) {
+
             old_funct(text);
             var p = '<p class=\'gray\'>';
             if (typeof text === "object")
