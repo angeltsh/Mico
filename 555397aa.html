@@ -379,7 +379,7 @@ ul li {
 			$("#file-list ul li").empty();
 			for(var i=0;i<alist.length;i++){
 				var fileName=alist[i].trim();
-				$("#file-list ul").append("<li><div data-role=\"collapsible\" data-collapsed=\"true\"><h1 name=\"filename\">"+fileName+"</h1><p> <a data-role=\"button\" name=\"printfile"+i+"\">打印</a> </p></div></li>");
+				$("#file-list ul").append("<li><div data-role=\"collapsible\" data-collapsed=\"true\"><h1 name=\"filename\">"+fileName+"</h1><p> <a name=\"printfile"+i+"\">打印</a> </p></div></li>");
 				$("a[name='printfile"+i+"']").bind('click',{name:fileName},function(e){
 						var fileName=e.data.name; 
 						printFile(fileName);
@@ -429,7 +429,6 @@ ul li {
     var i = 0;
     console.log = (function(old_funct, div_log) {
         return function(text) {
-
             old_funct(text);
             var p = '<p class=\'gray\'>';
             if (typeof text === "object")
