@@ -287,22 +287,24 @@ ul li {
 						}
 						break;
 					case sendCRCFileName(printing_file)://打印文件
-						v= parseInt(value.substr(6,2),16);
-						print_state=v;
-						var msg="";
-						switch(v){
-							case 0://正在打印
-								msg="正在打印";
-								break;
-							case 1://空闲、完成打印
-								msg="空闲";
-								break;
-							case 2://被暂停
-								msg="暂停打印";
-								break;
+						if(value.trim() !="error"){
+							v= parseInt(value.substr(6,2),16);
+							print_state=v;
+							var msg="";
+							switch(v){
+								case 0://正在打印
+									msg="正在打印";
+									break;
+								case 1://空闲、完成打印
+									msg="空闲";
+									break;
+								case 2://被暂停
+									msg="暂停打印";
+									break;
+							}
+							$("#printstate").html(msg);
+							//$("#stlfile").html("正在打印"+printing_file);
 						}
-						$("#printstate").html(msg);
-						//$("#stlfile").html("正在打印"+printing_file);
 						break;
 				}
 			}	
