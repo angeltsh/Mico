@@ -74,6 +74,7 @@ ul li {
 <script>
 <!--
 	var commondQueue=new Array();
+	var returnQueue=new Array();
 	
 	/**定时发送指令*/
 	var timeer;//写入指令
@@ -149,7 +150,8 @@ ul li {
             // commond：指令
             client.publish = function(topic, commond) {
                 console.log("现在执行-->:"+commond);
-				lastCommond=commond;//最后一次执行的命令
+				lastCommond=commond;//最后一次执行的命令	
+				returnQueue.push(commondQueue.shift());
                 message = new Paho.MQTT.Message(commond);
                 message.destinationName = topic;
                 client.send(message);
@@ -184,9 +186,9 @@ ul li {
         }
 		
 		function analysis(value){
-			var commond2=commondQueue[0];
 			var v="default";
 			if(value!="error" && confirmCRC(value)){
+				var commond2=returnQueue.shift();
 				switch (commond2) {
 					case getCRCCommond("D5030A0102",false)://左头
 						v= parseInt(revert(value.substr(6,4)),16);
@@ -255,7 +257,7 @@ ul li {
 					case getCRCCommond("D5011E",false)://文件列表是否可获取
 						v="fstate";
 						var state=parseInt(value.substr(6,2),16);
-						if(state==0){	
+						if(state == 0){	
 							files_state=true;
 						}else{
 							files_state=false;
@@ -311,20 +313,15 @@ ul li {
 			
 			if(v == "default"){//未收到正确回复指令
 			}else if(v == 'fstate'){//文件列表可获取
-				commondQueue.shift();
 				if(files_state){//可以获取文件	
 					addCommond(getCRCCommond("D5021201",false));
 				}else{
 					console.log("文件列表暂时无法获取，请稍后再试。");
 				}
 			}else if(v == "file"){//未完成文件列表获取，继续获取
-				commondQueue.shift();
 				addCommond(getCRCCommond("D5021200",false));
 			}else if(v == 'fend'){
-				commondQueue.shift();
 				addCommond(getCRCCommond("D5011F",false));
-			}else{//返回正确指令，删除整体指令，并执行下一条
-				commondQueue.shift();
 			}
 		}
 
@@ -340,7 +337,12 @@ ul li {
 		
 		//添加指令
 		function addCommond(commond){
+			
 			if(commond.trim() != ''){
+				commondQueue.unshift(commond);
+			}
+			
+			/*if(commond.trim() != ''){
 				if(lastCommond == "" || commondQueue.length<=0){
 					commondQueue.unshift(commond);
 				}else{
@@ -348,7 +350,7 @@ ul li {
 					commondQueue.unshift(commond);
 					commondQueue.unshift(temp);
 				}
-			}
+			}*/
 		}
 		
 		//暂停
@@ -425,7 +427,7 @@ ul li {
 	function timedCount2(fnSendCommond){
 		var commond=commondQueue[0];
 		if("undefined" != typeof(commond)){
-			//console.log("========");
+			console.log("========");
 			fnSendCommond(commond);
 		}
 		//计时器
@@ -437,10 +439,10 @@ ul li {
     var i = 0;
     console.log = (function(old_funct, div_log) {
         return function(text) {
-            old_funct(text);
+            old_funct(getNowFormatDate()+": " +text);
             var p = '<p class=\'gray\'>';
             if (typeof text === "object")
-                div_log.innerHTML += p + JSON.stringify(text) + '</p>';
+                div_log.innerHTML += p + getNowFormatDate()+": " + JSON.stringify(text) + '</p>';
             else
                 div_log.innerHTML += p+ getNowFormatDate()+": " + text + '</p>';
 
