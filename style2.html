@@ -150,7 +150,7 @@ ul li {
             // commond：指令
             client.publish = function(topic, commond) {
                 console.log("现在执行-->:"+commond);
-				lastCommond=commond;//最后一次执行的命令	
+				//lastCommond=commond;//最后一次执行的命令	
 				returnQueue.push(commondQueue.shift());
                 message = new Paho.MQTT.Message(commond);
                 message.destinationName = topic;
@@ -186,9 +186,9 @@ ul li {
         }
 		
 		function analysis(value){
+			var commond2=returnQueue.shift();
 			var v="default";
-			if(value!="error" && confirmCRC(value)){
-				var commond2=returnQueue.shift();
+			if(value!="error" && confirmCRC(value)){	
 				switch (commond2) {
 					case getCRCCommond("D5030A0102",false)://左头
 						v= parseInt(revert(value.substr(6,4)),16);
@@ -311,7 +311,8 @@ ul li {
 				}
 			}	
 			
-			if(v == "default"){//未收到正确回复指令
+			if(v == "default"){//未收到正确回复指令，重新获取
+				addCommond(commond2);
 			}else if(v == 'fstate'){//文件列表可获取
 				if(files_state){//可以获取文件	
 					addCommond(getCRCCommond("D5021201",false));
@@ -408,8 +409,16 @@ ul li {
 	
 	/**定时发送指令*/	
 	//定时添加获取指令
-	function timedCount(){		
+	var waitCommond=false;
+	function timedCount(){
+		if(waitCommond){
+			//计时器
+			timeer=setTimeout("timedCount()",6000);//毫秒
+			waitCommond=false;
+			return;
+		}
 		if(commondQueue.length == 0){
+			waitCommond=true;
 			commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
 			commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
 			commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
