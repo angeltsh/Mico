@@ -170,6 +170,12 @@ ul li {
             if (responseObject.errorCode !== 0){
 				//与设备已断开连接，请重新链接，responseObject.errorMessage
                 console.log("与设备已断开连接，重新连接中.....");
+				
+				//初始化数据
+				commondQueue=new Array();
+				returnQueue=new Array();
+				
+				//断线重连
 				ez_connect(device_id); 
 			}
         }

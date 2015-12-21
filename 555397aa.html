@@ -102,7 +102,7 @@ ul li {
 	var chooseprint=false;//是否打印文件
 	
 	
-	//device_id="555397aa/d0bae4001fdf";//网络测试数据
+	device_id="555397aa/d0bae4001fdf";//网络测试数据
 	//device_id="555397aa/d0bae4003738";//本地测试数据
 	//current_file="test";//本地文件
 	//print_state=1;
@@ -170,6 +170,12 @@ ul li {
             if (responseObject.errorCode !== 0){
 				//与设备已断开连接，请重新链接，responseObject.errorMessage
                 console.log("与设备已断开连接，重新连接中.....");
+				
+				//初始化数据
+				commondQueue=new Array();
+				returnQueue=new Array();
+				
+				//断线重连
 				ez_connect(device_id); 
 			}
         }
