@@ -128,9 +128,9 @@ ul li {
         var wsbroker = "api.easylink.io";  //mqtt websocket enabled broker
         var wsport = 1983 // port for above
 		
-		if(clientID == null || clientID.trim ==""){
+		//if(clientID == null || clientID.trim ==""){
 			clientID="v1web" + parseInt(Math.random() * 1000000, 12);
-		}
+		//}
         client = new Paho.MQTT.Client(wsbroker, wsport, clientID);
 
         // 基本参数配置
