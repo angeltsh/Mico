@@ -102,7 +102,7 @@ ul li {
 	var chooseprint=false;//是否打印文件
 	
 	
-	device_id="555397aa/d0bae4001fdf";//网络测试数据
+	//device_id="555397aa/d0bae4001fdf";//网络测试数据
 	//device_id="555397aa/d0bae4003738";//本地测试数据
 	//current_file="test";//本地文件
 	//print_state=1;
@@ -236,6 +236,7 @@ ul li {
 						switch(v){
 							case 0://正在打印
 								msg="正在打印";
+								addCommond(getCRCCommond("D50114",false));//获取正在打印的文件
 								break;
 							case 1://空闲、完成打印
 								msg="空闲";
@@ -430,7 +431,6 @@ ul li {
 			commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
 			commondQueue.push(getCRCCommond("D5010B",false));//打印状态
 			if(print_state == 0){
-				commondQueue.push(getCRCCommond("D50114",false));//正在打印的文件
 				commondQueue.push(getCRCCommond("D5011D",false));//打印进度
 			}
 		}
