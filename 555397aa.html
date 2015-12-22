@@ -102,7 +102,7 @@ ul li {
 	var chooseprint=false;//是否打印文件
 	
 	
-	//device_id="555397aa/d0bae4001fdf";//网络测试数据
+	device_id="555397aa/d0bae4001fdf";//网络测试数据
 	//device_id="555397aa/d0bae4003738";//本地测试数据
 	//current_file="test";//本地文件
 	//print_state=1;
@@ -255,13 +255,13 @@ ul li {
 						break;
 					case getCRCCommond("D50108",false)://暂停/继续
 						v= parseInt(value.substr(6,2),16);
-						//$("#printstate").html("暂停打印");
-						addCommond(getCRCCommond("D50108",false))
+						$("#printstate").html("暂停打印");
+						addCommond(getCRCCommond("D5010B",false))
 						break;
 					case getCRCCommond("D50107",false)://停止打印
 						v= parseInt(value.substr(6,2),16);
 						$("#printstate").html("停止打印");
-						addCommond(getCRCCommond("D50108",false))
+						addCommond(getCRCCommond("D5010B",false))
 						break;
 					case getCRCCommond("D5011E",false)://文件列表是否可获取
 						v="fstate";
