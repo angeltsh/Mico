@@ -193,6 +193,7 @@ ul li {
 		
 		function analysis(value){
 			var commond2=returnQueue.shift();
+			console.log("发送的指令-->:"+commond2);
 			var v="default";
 			if(value!="error" && confirmCRC(value)){	
 				switch (commond2) {
@@ -233,6 +234,7 @@ ul li {
 						v= parseInt(value.substr(6,2),16);
 						print_state=v;
 						var msg="";
+						console.log("=========="+v);
 						switch(v){
 							case 0://正在打印
 								msg="正在打印";
