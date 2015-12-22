@@ -256,10 +256,12 @@ ul li {
 					case getCRCCommond("D50108",false)://暂停
 						v= parseInt(value.substr(6,2),16);
 						$("#printstate").html("暂停打印");
+						addCommond(getCRCCommond("D50108",false))
 						break;
 					case getCRCCommond("D50107",false)://停止
 						v= parseInt(value.substr(6,2),16);
 						$("#printstate").html("停止");
+						addCommond(getCRCCommond("D50108",false))
 						break;
 					case getCRCCommond("D5011E",false)://文件列表是否可获取
 						v="fstate";
@@ -374,6 +376,7 @@ ul li {
 					break;
 				case 1://空闲，查询文件列表是否处于可获取状态
 					commond="D5011E";
+					break;
 			}
 			addCommond(getCRCCommond(commond,false));
 		}
