@@ -433,6 +433,10 @@ ul li {
 				//commondQueue.push(getCRCCommond("D50114",false));//正在打印的文件
 				commondQueue.push(getCRCCommond("D5011D",false));//打印进度
 			}
+		}else{
+			if(returnQueue.length>0){
+				returnQueue=new Array();
+			}
 		}
 				
 		//计时器
@@ -442,8 +446,11 @@ ul li {
 	function timedCount2(fnSendCommond){
 		var commond=commondQueue[0];
 		if("undefined" != typeof(commond)){
-			console.log("========");
-			fnSendCommond(commond);
+			console.log("========"+commond);
+			console.log(returnQueue);
+			if(returnQueue.length == 0){
+				fnSendCommond(commond);
+			}
 		}
 		//计时器
 		timeer2=setTimeout("timedCount2("+fnSendCommond+")",1500);//毫秒
