@@ -24,9 +24,11 @@ a {
 </body>
 <script>
 
-var str="D50F8100424F545F2D5F30312E78336700";
+var str="D503811400";
 
-alert(getCRCCommond(str,false) == (str+"03"));
+alert(parseInt(revert(str.substr(6,4)),16));
+
+alert(confirmCRC(str)+"");
 
 
 $("ul").html("index");

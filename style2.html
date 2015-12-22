@@ -129,7 +129,7 @@ ul li {
         var wsport = 1983 // port for above
 		
 		//if(clientID == null || clientID.trim ==""){
-			clientID="v1web" + parseInt(Math.random() * 1000000, 12);
+		clientID="v1web" + parseInt(Math.random() * 1000000, 12);
 		//}
         client = new Paho.MQTT.Client(wsbroker, wsport, clientID);
 
@@ -150,7 +150,7 @@ ul li {
             // commond：指令
             client.publish = function(topic, commond) {
                 console.log("现在执行-->:"+commond);
-				//lastCommond=commond;//最后一次执行的命令	
+				lastCommond=commond;//最后一次执行的命令	
 				returnQueue.push(commondQueue.shift());
                 message = new Paho.MQTT.Message(commond);
                 message.destinationName = topic;
@@ -236,7 +236,7 @@ ul li {
 						switch(v){
 							case 0://正在打印
 								msg="正在打印";
-								addCommond(getCRCCommond("D50114",false));//获取正在打印的文件
+								addCommond(getCRCCommond("D50114",false));//正在打印的文件
 								break;
 							case 1://空闲、完成打印
 								msg="空闲";
@@ -318,8 +318,7 @@ ul li {
 				}
 			}	
 			
-			if(v == "default"){//未收到正确回复指令，重新获取
-				addCommond(commond2);
+			if(v == "default"){//未收到正确回复指令
 			}else if(v == 'fstate'){//文件列表可获取
 				if(files_state){//可以获取文件	
 					addCommond(getCRCCommond("D5021201",false));
@@ -345,12 +344,7 @@ ul li {
 		
 		//添加指令
 		function addCommond(commond){
-			
 			if(commond.trim() != ''){
-				commondQueue.unshift(commond);
-			}
-			
-			/*if(commond.trim() != ''){
 				if(lastCommond == "" || commondQueue.length<=0){
 					commondQueue.unshift(commond);
 				}else{
@@ -358,7 +352,7 @@ ul li {
 					commondQueue.unshift(commond);
 					commondQueue.unshift(temp);
 				}
-			}*/
+			}
 		}
 		
 		//暂停
@@ -431,6 +425,7 @@ ul li {
 			commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
 			commondQueue.push(getCRCCommond("D5010B",false));//打印状态
 			if(print_state == 0){
+				//commondQueue.push(getCRCCommond("D50114",false));//正在打印的文件
 				commondQueue.push(getCRCCommond("D5011D",false));//打印进度
 			}
 		}
