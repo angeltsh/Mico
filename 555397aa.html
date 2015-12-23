@@ -420,7 +420,7 @@ ul li {
 	function timedCount(){
 		if(waitCommond){
 			//计时器
-			timeer=setTimeout("timedCount()",5000);//毫秒
+			timeer=setTimeout("timedCount()",3000);//毫秒
 			waitCommond=false;
 			return;
 		}
@@ -447,8 +447,8 @@ ul li {
 	function timedCount2(fnSendCommond){
 		var commond=commondQueue[0];
 		if("undefined" != typeof(commond)){
-			//console.log("========"+commond);
-			//console.log(returnQueue);
+			console.log("========"+commond);
+			console.log(returnQueue);
 			if(returnQueue.length == 0){
 				fnSendCommond(commond);
 			}
