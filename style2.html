@@ -416,7 +416,7 @@ ul li {
 	/**定时发送指令*/	
 	//定时添加获取指令
 	//var waitCommond=false;
-	var clearRQ=false;
+	//var clearRQ=false;
 	function timedCount(){
 		//if(waitCommond){
 			//计时器
@@ -435,9 +435,7 @@ ul li {
 				commondQueue.push(getCRCCommond("D5011D",false));//打印进度
 			}
 		}else{
-			clearRQ=true;
-			if(returnQueue.length>0 && clearRQ){
-				clearRQ=false;
+			if(returnQueue.length>0){
 				returnQueue=new Array();
 			}
 		}
