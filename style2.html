@@ -234,7 +234,7 @@ ul li {
 						v= parseInt(value.substr(6,2),16);
 						print_state=v;
 						var msg="";
-						console.log("=========="+v);
+						//console.log("=========="+v);
 						switch(v){
 							case 0://正在打印
 								msg="正在打印";
@@ -416,6 +416,7 @@ ul li {
 	/**定时发送指令*/	
 	//定时添加获取指令
 	//var waitCommond=false;
+	var clearRQ=false;
 	function timedCount(){
 		//if(waitCommond){
 			//计时器
@@ -434,7 +435,9 @@ ul li {
 				commondQueue.push(getCRCCommond("D5011D",false));//打印进度
 			}
 		}else{
-			if(returnQueue.length>0){
+			clearRQ=true;
+			if(returnQueue.length>0 && clearRQ){
+				clearRQ=false;
 				returnQueue=new Array();
 			}
 		}
@@ -446,8 +449,8 @@ ul li {
 	function timedCount2(fnSendCommond){
 		var commond=commondQueue[0];
 		if("undefined" != typeof(commond)){
-			console.log("========"+commond);
-			console.log(returnQueue);
+			//console.log("========"+commond);
+			//console.log(returnQueue);
 			if(returnQueue.length == 0){
 				fnSendCommond(commond);
 			}
