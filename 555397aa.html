@@ -415,17 +415,17 @@ ul li {
 	
 	/**定时发送指令*/	
 	//定时添加获取指令
-	//var waitCommond=false;
+	var waitCommond=false;
 	//var clearRQ=false;
 	function timedCount(){
-		//if(waitCommond){
+		if(waitCommond){
 			//计时器
-			//timeer=setTimeout("timedCount()",5000);//毫秒
-			//waitCommond=false;
-			//return;
-		//}
+			timeer=setTimeout("timedCount()",5000);//毫秒
+			waitCommond=false;
+			return;
+		}
 		if(commondQueue.length == 0){
-			//waitCommond=true;
+			waitCommond=true;
 			commondQueue.push(getCRCCommond("D5030A0102",false));//左头温度
 			commondQueue.push(getCRCCommond("D5030A0002",false));//右头温度
 			commondQueue.push(getCRCCommond("D5030A001E",false));//底板温度
