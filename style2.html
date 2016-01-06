@@ -56,9 +56,9 @@ ul li {
       </ul>
       </p>
     </div>
-  </div>
-  <div id="debug">
-    <p>操作记录</p>
+    <div id="debug">
+      <p>操作记录</p>
+    </div>
   </div>
 </div>
 <div data-role="footer">
@@ -67,7 +67,6 @@ ul li {
   </center>
 </div>
 </div>
-<div id="debug" style="display:none;"></div>
 </body>
 <script src="./js/mqttws31.js"></script>
 <script src="./js/crc.js"></script>
@@ -420,7 +419,7 @@ ul li {
 	function timedCount(){
 		if(waitCommond){
 			//计时器
-			timeer=setTimeout("timedCount()",6000);//毫秒
+			timeer=setTimeout("timedCount()",2000);//毫秒
 			waitCommond=false;
 			return;
 		}
@@ -447,8 +446,8 @@ ul li {
 	function timedCount2(fnSendCommond){
 		var commond=commondQueue[0];
 		if("undefined" != typeof(commond)){
-			console.log("========"+commond);
-			console.log(returnQueue);
+			//console.log("========"+commond);
+			//console.log(returnQueue);
 			if(returnQueue.length == 0){
 				fnSendCommond(commond);
 			}

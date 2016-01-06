@@ -8,22 +8,71 @@
 <link href="./css/jquery.mobile-1.4.5.min.css" rel="stylesheet">
 <script src="./js/jquery-2.1.3.js"></script>
 <script src="./js/jquery.mobile-1.4.5.min.js"></script>
+<style>
+.ui-icon-pause:after {
+	background-image:url(imaages/pause.png);
+	background-size:25px 25px;
+}
+.ui-icon-stop:after {
+	background-image:url(imaages/stop.png);
+	background-size:25px 25px;
+}
+#info {
+	line-height:30px;
+	font-size:22px;
+	border:1px solid #CCC;
+	width:100%;
+	padding:10px;
+	background-color:#EEE;
+}
+</style>
 </head>
 <body>
 <div data-role="page" id="pageone">
   <div data-role="header">
     <h1>MiCOKit08</h1>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#" class="ui-btn-active ui-state-persist" data-icon="home">首页</a></li>
+        <li><a href="#pagetwo" data-icon="grid">文件列表</a></li>
+      </ul>
+    </div>
   </div>
   <div data-role="content">
-    <div class="ui-grid-a">
-      <div class="ui-block-a"> <a data-role="button" id="pause">暂停/继续</a> <a data-role="button" id="stop">停止</a><a data-role="button" id="getfiles">获取文件列表</a></div>
-      <div class="ui-block-b"> 左头：<span id="lt"></span>℃<br/>
-        右头：<span id="rt"></span>℃<br/>
-        底板：<span id="pt"></span>℃<br/>
-        状态：<span id="printstate"></span><span id="stlfile"></span><br/>
-        <span id="ppercent"></span><br/>
-      </div>
+    <div class="ui-block-b" id="info"> 左头：<span id="lt"></span>℃<br/>
+      右头：<span id="rt"></span>℃<br/>
+      底板：<span id="pt"></span>℃<br/>
+      状态：<span id="printstate"></span>&nbsp;&nbsp;<span id="stlfile"></span><br/>
+      <span id="ppercent"></span><br/>
     </div>
+    <span style="clear:both;"/>
+    <div class="ui-block-c" style="max-height:300px; line-height:20px; font-size:15px;">
+      <p>操作记录</p>
+      <div id="debug"> </div>
+    </div>
+  </div>
+  <div data-role="footer">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#" data-icon="pause" id="pause">暂停/继续</a></li>
+        <li><a href="#" data-icon="stop" id="stop">停止打印</a></li>
+      </ul>
+    </div>
+    <h1 style="font-size:12px;">尤尼科技</h1>
+  </div>
+</div>
+<div data-role="page" id="pagetwo">
+  <div data-role="header">
+    <h1>MiCOKit08</h1>
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#pageone" data-icon="home">首页</a></li>
+        <li><a href="#" class="ui-btn-active ui-state-persist" data-icon="grid">文件列表</a></li>
+      </ul>
+    </div>
+  </div>
+  <div data-role="content">
+    <div id="file-info"></div>
     <div id="file-list" data-role="collapsible" data-collapsed="false">
       <h1>文件列表</h1>
       <p>
@@ -32,17 +81,298 @@
       </p>
     </div>
   </div>
-  <div id="debug">
-    <p>操作记录</p>
+  <div data-role="footer">
+    <div data-role="navbar">
+      <ul>
+        <li><a href="#" data-icon="" id="getfiles">获取文件列表</a></li>
+        <!--<li><a href="#" data-icon="" id="stop">停止打印</a></li>-->
+      </ul>
+    </div>
+    <h1 style="font-size:12px;">尤尼科技</h1>
   </div>
 </div>
-<div data-role="footer">
-  <center>
-    青岛尤尼科技有限公司
-  </center>
-</div>
-</div>
-<div id="debug" style="display:none;"></div>
 </body>
 <script src="./js/mqttws31.js"></script>
 <script src="./js/crc.js"></script>
+<script>
+<!--
+	var commondQueue=new Array();
+	var returnQueue=new Array();
+	
+	/**定时发送指令*/
+	var timeer;//写入指令
+	var timeer2;//发送指令
+	
+    // 从url中获取某个参数的值
+    function getParameterByName(name) {
+        var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+        return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    }
+   // 得到设备ID
+    var device_id = getParameterByName('device_id');
+
+	var access_token;//微信token
+	var clientID;//客户端识别号
+	var client;//客户端
+	var ez_connect=ez_connect;
+	
+	var fileFlag=true;//是否重新获取文件列表
+	var state=0;//打印状态
+	
+	
+	device_id="555397aa/d0bae4001fdf";//网络测试数据
+	//device_id="555397aa/d0bae4003738";//本地测试数据
+	
+	document.title = device_id;//修改title
+	
+    // 如果设备ID不为空，则执行连接MQTT的操作
+    if ( device_id !== null ){
+       	ez_connect(device_id); 
+    }
+
+    // 连接MQTT服务
+   	function ez_connect(device_id) {
+        // 获取access_token
+        // access_token是公众号的全局唯一票据，公众号调用各接口时都需使用access_token。
+        // 正常情况下access_token有效期为7200秒，重复获取将导致上次获取的access_token失效
+        access_token = getParameterByName('access_token');
+		
+        // websocket连接
+        // wsbroker:host
+        // wsport:端口 默认1983
+        // Client-ID ： v1_web_[MAC]  //版本号_app_手机MAC(必须是12位小写)
+        var wsbroker = "api.easylink.io";  //mqtt websocket enabled broker
+        var wsport = 1983 // port for above
+		
+		//if(clientID == null || clientID.trim ==""){
+		clientID="v1web" + parseInt(Math.random() * 1000000, 12);
+		//}
+        client = new Paho.MQTT.Client(wsbroker, wsport, clientID);
+
+        // 基本参数配置
+        // 连接丢失所对应的callback函数
+        client.onConnectionLost = onConnectionLost;
+        // 消息到达所对应的callback函数
+        client.onMessageArrived = onMessageArrived;
+        // 连接成功所对应的callback函数
+        client.connect({onSuccess:onConnect});
+
+        // 连接成功
+        function onConnect() {
+            var subtopic = device_id+'/out/#';
+            // Once a connection has been made, make a subscription and send a message.
+            // 向某个通道发送指令
+            // topic：通道
+            // commond：指令
+            client.publish = function(topic, commond) {
+				console.log("现在执行-->:"+commond);
+				returnQueue.push(commondQueue.shift());
+                message = new Paho.MQTT.Message(commond);
+                message.destinationName = topic;
+                client.send(message);
+            }
+           	//console.log("device_id:"+device_id);
+            console.log("连接成功。");
+            client.subscribe(subtopic, {qos: 0});
+        }
+        // 连接丢失
+        function onConnectionLost(responseObject) {
+            if (responseObject.errorCode !== 0){
+				//与设备已断开连接，请重新链接，responseObject.errorMessage
+                console.log("与设备已断开连接，重新连接中.....");
+				//断线重连
+				ez_connect(device_id); 
+			}
+        }
+		
+        // 消息到达
+        function onMessageArrived(message) {
+			var result=message.payloadString;
+			result=eval("result="+result);
+			
+			if(result.id != null  && result.id==clientID){
+				console.log('返回数据<--:' +  message.payloadString);	
+				
+				//解析命令
+				if(result.Files !=null && result.getFiles == 'ok'){
+					var next=true;
+					var filelist=new Array();
+					for(var i in result.Files){
+						if(result.Files[i] == 'NULL'){
+							next=false;
+						}else{
+							filelist.push(result.Files[i]);
+						}
+					}
+					showFileList(filelist);
+					if(next){
+						mgetFiles('next');
+					}
+				}
+				
+				//文件列表
+				//每次获取一组，获取之后,在获取下一条，next,
+				//文件列表里出现空，则不再获取
+				//setTimeout(function(){mgetFiles('next');},1000);
+				
+				//打印文件
+				
+			}else if(result.id == null){
+				//处理定时返回的数据
+				console.log('返回数据<--:' +  message.payloadString);	
+				
+				//左头温度
+				if(result.tempLN !=null){
+					$("#lt").html(result.tempLN);
+				}
+				
+				//右头温度
+				if(result.tempRN !=null){
+					$("#rt").html(result.tempRN);
+				}
+				
+				//底板温度
+				if(result.tempFN !=null){
+					$("#pt").html(result.tempFN);
+				}
+				
+				//状态
+				if(result.state !=null){
+					state=result.state;
+					switch(result.state){
+						case 0:
+							$("#printstate").html("正在打印");
+							break;
+						case 1:
+							$("#printstate").html("空闲");
+							break;
+						case 2:
+							$("#printstate").html("暂停打印");
+							break;
+					}
+				}
+				
+				//打印进度
+				if(result.per !=null){
+					$("#ppercent").html("打印进度："+result.per+"%");
+				}else{
+					$("#ppercent").html("");
+				}
+				
+				//打印文件
+				if(result.printingFile !=null){
+					$("#stlfile").html(result.printingFile);
+				}else{
+					$("#stlfile").html("");
+				}
+			}
+        }
+
+        // 串口数据发送部分
+        //var inputMessage = document.getElementById('message');
+        // 将消息发送到指定的通道
+      	function send2uart(commond) {
+            var topic = device_id+'/in';
+			commond.id=clientID;
+			client.publish(topic, JSON.stringify(commond));
+        }
+		
+		function mpause(){
+			var commond=new Object();
+			commond.printPC='NULL';
+			send2uart(commond);
+		}
+		//暂停
+		document.querySelector('#pause').addEventListener('click', mpause);
+				
+		function mstop(){
+			var commond=new Object();
+			commond.printS='NULL';
+			send2uart(commond);
+		}
+		//停止
+		document.querySelector('#stop').addEventListener('click', mstop);
+	   
+	   	function mgetFiles(indicate){
+			if(indicate == 'first'){
+				fileFlag=true;
+			}else{
+				fileFlag=false;
+			}
+			var commond=new Object();
+			commond.getFiles=indicate;
+			
+			if(state == 1 ){//空闲时查询
+				send2uart(commond);
+			}else{
+				alert("机器繁忙，请稍后再试");
+				console.log("机器繁忙，请稍后再试");
+			}
+		}
+		//获取文件列表
+		document.querySelector('#getfiles').addEventListener('click',function(){mgetFiles('first')});
+		
+		
+		function printFile(fileName){
+			var commond=new Object();
+			commond.printFile=fileName;
+			
+			if(state ==1 ){//空闲时打印
+				send2uart(commond);
+			}else{
+				alert("机器繁忙，请稍后再试");
+				console.log("机器繁忙，请稍后再试");
+			}
+		}
+		
+		var index=0;
+		//显示文件列表
+		function showFileList(alist){
+			if(fileFlag){
+				$("#file-list ul").empty();
+				index=0;
+			}
+			for(var i=0;i<alist.length;i++){
+				var fileName=alist[i].trim();
+				$("#file-list ul").append("<li><div data-role=\"collapsible\" data-collapsed=\"true\"><h1 name=\"filename\">"+fileName+"</h1></div><a name=\"printfile"+index+"\">打印</a></li>");
+				$("a[name='printfile"+index+"']").bind('click',{name:fileName},function(e){
+						var fileName=e.data.name; 
+						printFile(fileName);
+				});
+				index++;
+			}
+		}
+		
+		//文件列表
+	   	$("h1[name='filename']").click(function(){
+			current_file=$(this).children().html();
+			current_file=current_file.substr(0,current_file.indexOf("<")).trim();			
+		  	$("#stlfile").html("选择文件："+current_file);
+		  	$("#print").css("display","block");
+	  	});
+    }
+
+    // 日志打印在页面的部分
+    var i = 0;
+    console.log = (function(old_funct, div_log) {
+        return function(text) {
+            old_funct(getNowFormatDate()+": " +text);
+            var p = '<p class=\'gray\'>';
+            if (typeof text === "object")
+                div_log.innerHTML = p + getNowFormatDate()+": " + JSON.stringify(text) + '</p>'+div_log.innerHTML;
+            else
+                div_log.innerHTML = p+ getNowFormatDate()+": " + text + '</p>'+div_log.innerHTML;
+
+            div_log.scrollTop = div_log.scrollHeight;
+            i += 1;
+        };
+    } (console.log.bind(console), document.getElementById("debug")));
+    console.error = console.debug = console.info =  console.log;
+	
+	//调试调用
+	function debug(txt){
+		console.log(txt);
+	}
+// -->
+</script>
+</html>
