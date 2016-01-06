@@ -315,8 +315,8 @@
 		function printFile(fileName){
 			var commond=new Object();
 			commond.printFile=fileName;
-			
 			if(state ==1 ){//空闲时打印
+				alert("开始打印文件："+fileName);
 				send2uart(commond);
 			}else{
 				alert("机器繁忙，请稍后再试");
