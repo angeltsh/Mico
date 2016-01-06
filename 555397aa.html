@@ -45,7 +45,7 @@
       <span id="ppercent"></span><br/>
     </div>
     <span style="clear:both;"/>
-    <div class="ui-block-c" style="max-height:300px; line-height:20px; font-size:15px;">
+    <div class="ui-block-c" style="max-height:300px; line-height:20px;">
       <p>操作记录</p>
       <div id="debug"> </div>
     </div>
@@ -57,7 +57,7 @@
         <li><a href="#" data-icon="stop" id="stop">停止打印</a></li>
       </ul>
     </div>
-    <h1 style="font-size:12px;">尤尼科技</h1>
+    <h1 style="font-size:6px;">版权所有 © 青岛尤尼科技有限公司</h1>
   </div>
 </div>
 <div data-role="page" id="pagetwo">
@@ -87,7 +87,7 @@
         <!--<li><a href="#" data-icon="" id="stop">停止打印</a></li>-->
       </ul>
     </div>
-    <h1 style="font-size:12px;">尤尼科技</h1>
+    <h1 style="font-size:12px;">版权所有 © 青岛尤尼科技有限公司</h1>
   </div>
 </div>
 </body>
@@ -333,7 +333,7 @@
 			}
 			for(var i=0;i<alist.length;i++){
 				var fileName=alist[i].trim();
-				$("#file-list ul").append("<li><div data-role=\"collapsible\" data-collapsed=\"true\"><h1 name=\"filename\">"+fileName+"</h1></div><a name=\"printfile"+index+"\">打印</a></li>");
+				$("#file-list ul").append("<li><div data-role=\"collapsible\" data-collapsed=\"true\"><h3 name=\"filename\">"+fileName+"</h3></div><a name=\"printfile"+index+"\">打印</a></li>");
 				$("a[name='printfile"+index+"']").bind('click',{name:fileName},function(e){
 						var fileName=e.data.name; 
 						printFile(fileName);
