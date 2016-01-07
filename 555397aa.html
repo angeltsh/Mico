@@ -33,7 +33,7 @@
     <div data-role="navbar">
       <ul>
         <li><a href="#" class="ui-btn-active ui-state-persist" data-icon="home">首页</a></li>
-        <li><a href="#pagetwo" data-icon="grid">文件列表</a></li>
+        <li><a href="#pagetwo" data-icon="grid" data-transition="none" >文件列表</a></li>
       </ul>
     </div>
   </div>
@@ -53,8 +53,12 @@
   <div data-role="footer" data-position="fixed" data-tap-toggle="false">
     <div data-role="navbar">
       <ul>
-        <li><a href="#" data-icon="pause" id="pause">暂停/继续</a></li>
-        <li><a href="#" data-icon="stop" id="stop">停止打印</a></li>
+        <li>
+          <button href="#" data-icon="pause" id="pause">暂停/继续</button>
+        </li>
+        <li>
+          <button href="#" data-icon="stop" id="stop">停止打印</button>
+        </li>
       </ul>
     </div>
     <h1 style="font-size:6px;">版权所有 © 青岛尤尼科技有限公司</h1>
@@ -65,7 +69,7 @@
     <h1>MiCOKit08</h1>
     <div data-role="navbar">
       <ul>
-        <li><a href="#pageone" data-icon="home">首页</a></li>
+        <li><a href="#pageone" data-icon="home" data-transition="none" >首页</a></li>
         <li><a href="#" class="ui-btn-active ui-state-persist" data-icon="grid">文件列表</a></li>
       </ul>
     </div>
@@ -83,7 +87,7 @@
   <div data-role="footer" data-position="fixed" data-tap-toggle="false">
     <div data-role="navbar">
       <ul>
-        <li><a href="#" data-icon="" id="getfiles">获取文件列表</a></li>
+        <li><button href="#" data-icon="grid" id="getfiles">获取文件列表</button></li>
         <!--<li><a href="#" data-icon="" id="stop">停止打印</a></li>-->
       </ul>
     </div>
@@ -164,7 +168,7 @@
             // topic：通道
             // commond：指令
             client.publish = function(topic, commond) {
-				console.log("现在执行-->:"+commond);
+				//console.log("现在执行-->:"+commond);
 				returnQueue.push(commondQueue.shift());
                 message = new Paho.MQTT.Message(commond);
                 message.destinationName = topic;
@@ -190,9 +194,11 @@
 			result=eval("result="+result);
 			
 			if(result.id != null  && result.id==clientID){
-				console.log('返回数据<--:' +  message.payloadString);	
+				//console.log('返回数据<--:' +  message.payloadString);	
 				
-				//解析命令
+				//文件列表
+				//每次获取一组，获取之后,在获取下一条，next,
+				//文件列表里出现空，则不再获取
 				if(result.Files !=null && result.getFiles == 'ok'){
 					var next=true;
 					var filelist=new Array();
@@ -203,22 +209,17 @@
 							filelist.push(result.Files[i]);
 						}
 					}
+					$("#file-info").html("");
 					showFileList(filelist);
 					if(next){
 						mgetFiles('next');
 					}
 				}
-				
-				//文件列表
-				//每次获取一组，获取之后,在获取下一条，next,
-				//文件列表里出现空，则不再获取
-				//setTimeout(function(){mgetFiles('next');},1000);
-				
 				//打印文件
 				
 			}else if(result.id == null){
 				//处理定时返回的数据
-				console.log('返回数据<--:' +  message.payloadString);	
+				//console.log('返回数据<--:' +  message.payloadString);	
 				
 				//左头温度
 				if(result.tempLN !=null){
@@ -279,6 +280,7 @@
 		function mpause(){
 			var commond=new Object();
 			commond.printPC='NULL';
+			console.log("暂停/继续");	
 			send2uart(commond);
 		}
 		//暂停
@@ -287,6 +289,7 @@
 		function mstop(){
 			var commond=new Object();
 			commond.printS='NULL';
+			console.log("停止打印");			
 			send2uart(commond);
 		}
 		//停止
@@ -302,9 +305,12 @@
 			commond.getFiles=indicate;
 			
 			if(state == 1 ){//空闲时查询
+				if(indicate == 'first'){
+					$("#file-info").html("正在获取文件列表，请稍后...");
+				}
 				send2uart(commond);
 			}else{
-				alert("机器繁忙，请稍后再试");
+				$("#file-info").html("机器繁忙，请稍后再试");
 				console.log("机器繁忙，请稍后再试");
 			}
 		}
@@ -316,10 +322,11 @@
 			var commond=new Object();
 			commond.printFile=fileName;
 			if(state ==1 ){//空闲时打印
-				alert("开始打印文件："+fileName);
+				alert("打印文件："+fileName);
+				console.log("打印文件："+fileName);
 				send2uart(commond);
 			}else{
-				alert("机器繁忙，请稍后再试");
+				$("#file-info").html("机器繁忙，请稍后再试");
 				console.log("机器繁忙，请稍后再试");
 			}
 		}
