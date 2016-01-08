@@ -38,9 +38,9 @@
     </div>
   </div>
   <div data-role="content">
-    <div class="ui-block-b" id="info"> 左头：<span id="lt"></span>℃<br/>
-      右头：<span id="rt"></span>℃<br/>
-      底板：<span id="pt"></span>℃<br/>
+    <div class="ui-block-b" id="info"> 左头温度：<span id="lt"></span>℃<br/>
+      右头温度：<span id="rt"></span>℃<br/>
+      底板温度：<span id="pt"></span>℃<br/>
       状态：<span id="printstate"></span>&nbsp;&nbsp;<span id="stlfile"></span><br/>
       <span id="ppercent"></span><br/>
     </div>
@@ -57,7 +57,7 @@
           <button href="#" data-icon="pause" id="pause">暂停/继续</button>
         </li>
         <li>
-          <button href="#" data-icon="stop" id="stop">停止打印</button>
+          <button href="#" data-icon="stop" id="stop">取消打印</button>
         </li>
       </ul>
     </div>
@@ -87,7 +87,9 @@
   <div data-role="footer" data-position="fixed" data-tap-toggle="false">
     <div data-role="navbar">
       <ul>
-        <li><button href="#" data-icon="grid" id="getfiles">获取文件列表</button></li>
+        <li>
+          <button href="#" data-icon="grid" id="getfiles">获取文件列表</button>
+        </li>
         <!--<li><a href="#" data-icon="" id="stop">停止打印</a></li>-->
       </ul>
     </div>
@@ -105,6 +107,8 @@
 	/**定时发送指令*/
 	var timeer;//写入指令
 	var timeer2;//发送指令
+	
+	alert(window.location.search);
 	
     // 从url中获取某个参数的值
     function getParameterByName(name) {
@@ -126,7 +130,7 @@
 	//device_id="555397aa/d0bae4001fdf";//网络测试数据
 	//device_id="555397aa/d0bae4003738";//本地测试数据
 	
-	$("span[name='title']") = device_id;//修改title
+	$("span[name='title']").html(device_id);//修改title
 	
     // 如果设备ID不为空，则执行连接MQTT的操作
     if ( device_id !== null ){
@@ -290,10 +294,12 @@
 		document.querySelector('#pause').addEventListener('click', mpause);
 				
 		function mstop(){
-			var commond=new Object();
-			commond.printS='NULL';
-			console.log("停止打印");			
-			send2uart(commond);
+			if(confirm("是否取消文件打印?")){
+				var commond=new Object();
+				commond.printS='NULL';
+				console.log("取消打印");			
+				send2uart(commond);
+			}
 		}
 		//停止
 		document.querySelector('#stop').addEventListener('click', mstop);
@@ -325,9 +331,11 @@
 			var commond=new Object();
 			commond.printFile=fileName;
 			if(state ==1 ){//空闲时打印
-				alert("打印文件："+fileName);
-				console.log("打印文件："+fileName);
-				send2uart(commond);
+				if(confirm("打印文件"+fileName+"吗?")){
+					console.log("打印文件："+fileName);
+					send2uart(commond);
+					window.location.hash = "pageone";
+				}
 			}else{
 				$("#file-info").html("机器繁忙，请稍后再试");
 				console.log("机器繁忙，请稍后再试");
@@ -343,7 +351,7 @@
 			}
 			for(var i=0;i<alist.length;i++){
 				var fileName=alist[i].trim();
-				$("#file-list ul").append("<li><div data-role=\"collapsible\" data-collapsed=\"true\"><h3 name=\"filename\">"+fileName+"</h3></div><a name=\"printfile"+index+"\">打印</a></li>");
+				$("#file-list ul").append("<li><div data-role=\"collapsible\" data-collapsed=\"true\"><span name=\"filename\">"+fileName+"</span><a name=\"printfile"+index+"\" style=\"float:right;\">打印</a></div></li>");
 				$("a[name='printfile"+index+"']").bind('click',{name:fileName},function(e){
 						var fileName=e.data.name; 
 						printFile(fileName);
