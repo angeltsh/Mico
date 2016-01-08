@@ -24,6 +24,11 @@
 	padding:10px;
 	background-color:#EEE;
 }
+#file-list li div {
+	height: 35px;
+    border-bottom: 1px dotted #CCC;
+    line-height: 35px;
+}
 </style>
 </head>
 <body>
@@ -79,7 +84,7 @@
     <div id="file-list" data-role="collapsible" data-collapsed="false">
       <h1>文件列表</h1>
       <p>
-      <ul>
+      <ul id="file-list">
       </ul>
       </p>
     </div>
@@ -124,8 +129,7 @@
 	
 	var fileFlag=true;//是否重新获取文件列表
 	var state=0;//打印状态
-	
-	
+
 	device_id="555397aa/d0bae4001fdf";//网络测试数据
 	//device_id="555397aa/d0bae4003738";//本地测试数据
 	
