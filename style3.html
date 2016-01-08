@@ -29,7 +29,7 @@
 <body>
 <div data-role="page" id="pageone">
   <div data-role="header">
-    <h1>MiCOKit08</h1>
+    <div><span style="height:30px; display:block; line-height:30px; text-align:center; font-size:12.5px;" name="title">MiCOKit08</span></div>
     <div data-role="navbar">
       <ul>
         <li><a href="#" class="ui-btn-active ui-state-persist" data-icon="home">首页</a></li>
@@ -51,8 +51,8 @@
     </div>
   </div>
   <div data-role="footer" data-position="fixed" data-tap-toggle="false">
-    <div data-role="navbar">
-      <ul>
+    <div data-role="navbar" id="sp">
+      <ul style="display:none;">
         <li>
           <button href="#" data-icon="pause" id="pause">暂停/继续</button>
         </li>
@@ -66,7 +66,7 @@
 </div>
 <div data-role="page" id="pagetwo">
   <div data-role="header">
-    <h1>MiCOKit08</h1>
+    <div><span style="height:30px; display:block; line-height:30px; text-align:center; font-size:12.5px;" name="title">MiCOKit08</span></div>
     <div data-role="navbar">
       <ul>
         <li><a href="#pageone" data-icon="home" data-transition="none" >首页</a></li>
@@ -126,7 +126,7 @@
 	device_id="555397aa/d0bae4001fdf";//网络测试数据
 	//device_id="555397aa/d0bae4003738";//本地测试数据
 	
-	document.title = device_id;//修改title
+	$("span[name='title']") = device_id;//修改title
 	
     // 如果设备ID不为空，则执行连接MQTT的操作
     if ( device_id !== null ){
@@ -242,12 +242,15 @@
 					switch(result.state){
 						case 0:
 							$("#printstate").html("正在打印");
+							$("#sp ul").css("display","");
 							break;
 						case 1:
 							$("#printstate").html("空闲");
+							$("#sp ul").css("display","none");
 							break;
 						case 2:
 							$("#printstate").html("暂停打印");
+							$("#sp ul").css("display","");
 							break;
 					}
 				}
