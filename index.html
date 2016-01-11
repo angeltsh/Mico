@@ -90,7 +90,8 @@
 
 $scope.unbind=function(item){
 	alert(item.device_id);
-	$http.post('http://www.fogcloud.io/v2/users/device/unbind',{
+	$http.post('http://www.fogcloud.io/v1/wechat/device/unbind',{
+	  app_id:"a612dec2-49c3-4ebb-8eab-5b5e3be9e9ce",
 	  device_id : item.device_id
 	 },{
      headers : {
