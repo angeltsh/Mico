@@ -90,7 +90,7 @@
 
 $scope.unbind=function(item){
 	alert(item.device_id);
-	$http.post('http://www.fogcloud.io/v2/users/device/unbind ',{
+	$http.post('http://www.fogcloud.io/v2/users/device/unbind',{
 	  device_id : item.device_id
 	 },{
      headers : {
