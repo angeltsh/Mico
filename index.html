@@ -89,9 +89,8 @@
 };
 
 $scope.unbind=function(item){
-	$http.post(
-   'http://www.fogcloud.io/v2/users/device/unbind',
-   {
+	alert(item.device_id);
+	$http.post('http://www.fogcloud.io/v2/users/device/unbind ',{
 	  device_id : item.device_id
 	 },{
      headers : {
@@ -146,7 +145,7 @@ item="item"
 href="{{ item.product_id }}.html?device_id={{ item.device_id }}&access_token={{ access_token }}&alias={{ item.alias }}" class="item-remove-animate"> <i ng-if="item.state==1" class="icon ion-record positive" ></i><i ng-if="item.state==0" class="icon ion-record assertive" ></i> {{ item.alias }}<i ng-if="item.state==1" class="item-note" >&nbsp;online</i><i ng-if="item.state==0" class="item-note" >&nbsp;offline</i><br>
       <span class="item-note">ID : {{ item.device_id }}</span>
       <ion-option-button class="button-assertive" ng-click="showPopup(item)"> 修改 </ion-option-button>
-      <ion-option-button class="button-assertive" ng-click="unbind(item)"> 修改 </ion-option-button>
+      <ion-option-button class="button-assertive" ng-click="unbind(item)"> 删除 </ion-option-button>
     </ion-item>
   </ion-list>
 </ion-content>
