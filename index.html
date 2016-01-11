@@ -13,6 +13,7 @@
       var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
       return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
     }
+	
     var access_token = getParameterByName('access_token');
 	//var access_token='aaaa';
     var device_list = [];
@@ -87,6 +88,25 @@
             });
 };
 
+$scope.unbind=function(item){
+	$http.post(
+   'http://www.fogcloud.io/v2/users/device/unbind',
+   {
+	  device_id : item.device_id
+	 },{
+     headers : {
+       'AUTHORIZATION' : "token " + access_token
+     }
+   }
+   ).success(function(data) {
+	
+  }).error(function(data) {
+   alert(data.error.message);
+   return;
+ });
+}
+
+//获取设备列表
 $scope.reloadPage = function() {
  $http.post(
    'http://api.easylink.io/v1/device/devices',
@@ -126,6 +146,7 @@ item="item"
 href="{{ item.product_id }}.html?device_id={{ item.device_id }}&access_token={{ access_token }}&alias={{ item.alias }}" class="item-remove-animate"> <i ng-if="item.state==1" class="icon ion-record positive" ></i><i ng-if="item.state==0" class="icon ion-record assertive" ></i> {{ item.alias }}<i ng-if="item.state==1" class="item-note" >&nbsp;online</i><i ng-if="item.state==0" class="item-note" >&nbsp;offline</i><br>
       <span class="item-note">ID : {{ item.device_id }}</span>
       <ion-option-button class="button-assertive" ng-click="showPopup(item)"> 修改 </ion-option-button>
+      <ion-option-button class="button-assertive" ng-click="unbind(item)"> 修改 </ion-option-button>
     </ion-item>
   </ion-list>
 </ion-content>
