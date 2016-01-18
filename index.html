@@ -90,8 +90,10 @@
 $scope.unbind=function(item){
 	//确定
 	var confirmPopup = $ionicPopup.confirm({
-       title: '确认解绑',
-       template: '确定要解绑设备吗？',
+       title: '解绑确认',
+       template: '要解绑设备吗？',
+	   cancelText: '取消',
+	   okText:'确定',
      });
      confirmPopup.then(function(res) {
        if(res) {
