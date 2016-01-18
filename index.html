@@ -47,7 +47,6 @@
       $scope.showPopup = function(item) {
         var index = $scope.items.indexOf(item);
         $scope.data = {}
-
           // An elaborate, custom popup
           var myPopup = $ionicPopup.show({
             template: '<input type="text" ng-model="data.alias">',
@@ -89,21 +88,31 @@
 };
 
 $scope.unbind=function(item){
-	alert(item.device_id);
-	$http.post('http://www.fogcloud.io/v1/wechat/device/unbind',{
-	  app_id:"a612dec2-49c3-4ebb-8eab-5b5e3be9e9ce",
-	  device_id : item.device_id
-	 },{
-     headers : {
-       'AUTHORIZATION' : "token " + access_token
-     }
-   }
-   ).success(function(data) {
-	
-  }).error(function(data) {
-   alert(data.error.message);
-   return;
- });
+	//确定
+	var confirmPopup = $ionicPopup.confirm({
+       title: '确认解绑',
+       template: '确定要解绑设备吗？',
+     });
+     confirmPopup.then(function(res) {
+       if(res) {
+         $http.post('http://www.fogcloud.io/v1/wechat/device/unbind',{
+			  app_id:"a612dec2-49c3-4ebb-8eab-5b5e3be9e9ce",
+			  device_id : item.device_id
+			 },{
+			 headers : {
+			   'AUTHORIZATION' : "token " + access_token
+			 }
+		   }
+		   ).success(function(data) {
+			   
+		  }).error(function(data) {
+		   alert(data.error.message);
+		   return;
+		 });
+       } else {
+         console.log('取消');
+       }
+     });
 }
 
 //获取设备列表
