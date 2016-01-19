@@ -19,54 +19,65 @@
 }
 #info {
 	line-height:30px;
-	font-size:22px;
 	border:1px solid #CCC;
 	width:100%;
 	padding:10px;
 	background-color:#EEE;
+}
+#file-list{
+	list-style:none;
+}
+#file-list li div {
+	height: 35px;
+    border-bottom: 1px dotted #CCC;
+    line-height: 35px;
 }
 </style>
 </head>
 <body>
 <div data-role="page" id="pageone">
   <div data-role="header">
-    <h1>MiCOKit08</h1>
+    <div><span style="height:30px; display:block; line-height:30px; text-align:center; font-size:12.5px;" name="title">MiCOKit08</span></div>
     <div data-role="navbar">
       <ul>
         <li><a href="#" class="ui-btn-active ui-state-persist" data-icon="home">首页</a></li>
-        <li><a href="#pagetwo" data-icon="grid">文件列表</a></li>
+        <li><a href="#pagetwo" data-icon="grid" data-transition="none" >文件列表</a></li>
       </ul>
     </div>
   </div>
   <div data-role="content">
-    <div class="ui-block-b" id="info"> 左头：<span id="lt"></span>℃<br/>
-      右头：<span id="rt"></span>℃<br/>
-      底板：<span id="pt"></span>℃<br/>
+    <div class="ui-block-b" id="info"> 左头温度：<span id="lt"></span>℃<br/>
+      右头温度：<span id="rt"></span>℃<br/>
+      底板温度：<span id="pt"></span>℃<br/>
       状态：<span id="printstate"></span>&nbsp;&nbsp;<span id="stlfile"></span><br/>
       <span id="ppercent"></span><br/>
     </div>
-    <span style="clear:both;"/>
-    <div class="ui-block-c" style="max-height:300px; line-height:20px; font-size:15px;">
+    <span style="clear:both;"></span>
+    <div class="ui-block-c" style="max-height:300px; line-height:20px;">
       <p>操作记录</p>
       <div id="debug"> </div>
     </div>
   </div>
-  <div data-role="footer">
-    <div data-role="navbar">
-      <ul>
-        <li><a href="#" data-icon="pause" id="pause">暂停/继续</a></li>
-        <li><a href="#" data-icon="stop" id="stop">停止打印</a></li>
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+    <div data-role="navbar" id="sp">
+      <ul style="display:none;">
+        <li>
+          <button href="#" data-icon="pause" id="pause">暂停/继续</button>
+        </li>
+        <li>
+          <button href="#" data-icon="stop" id="stop">取消打印</button>
+        </li>
       </ul>
     </div>
-    <h1 style="font-size:12px;">尤尼科技</h1>
+    <h1 style="font-size:6px;">版权所有 © 青岛尤尼科技有限公司</h1>
   </div>
 </div>
 <div data-role="page" id="pagetwo">
   <div data-role="header">
-    <h1>MiCOKit08</h1>
+    <div><span style="height:30px; display:block; line-height:30px; text-align:center; font-size:12.5px;" name="title">MiCOKit08</span></div>
     <div data-role="navbar">
       <ul>
-        <li><a href="#pageone" data-icon="home">首页</a></li>
+        <li><a href="#pageone" data-icon="home" data-transition="none" >首页</a></li>
         <li><a href="#" class="ui-btn-active ui-state-persist" data-icon="grid">文件列表</a></li>
       </ul>
     </div>
@@ -76,19 +87,21 @@
     <div id="file-list" data-role="collapsible" data-collapsed="false">
       <h1>文件列表</h1>
       <p>
-      <ul>
+      <ul id="file-list">
       </ul>
       </p>
     </div>
   </div>
-  <div data-role="footer">
+  <div data-role="footer" data-position="fixed" data-tap-toggle="false">
     <div data-role="navbar">
       <ul>
-        <li><a href="#" data-icon="" id="getfiles">获取文件列表</a></li>
+        <li>
+          <button href="#" data-icon="grid" id="getfiles">获取文件列表</button>
+        </li>
         <!--<li><a href="#" data-icon="" id="stop">停止打印</a></li>-->
       </ul>
     </div>
-    <h1 style="font-size:12px;">尤尼科技</h1>
+    <h1 style="font-size:6px;">版权所有 © 青岛尤尼科技有限公司</h1>
   </div>
 </div>
 </body>
@@ -102,7 +115,7 @@
 	/**定时发送指令*/
 	var timeer;//写入指令
 	var timeer2;//发送指令
-	
+
     // 从url中获取某个参数的值
     function getParameterByName(name) {
         var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
@@ -110,6 +123,7 @@
     }
    // 得到设备ID
     var device_id = getParameterByName('device_id');
+	var alias=getParameterByName('alias');
 
 	var access_token;//微信token
 	var clientID;//客户端识别号
@@ -118,12 +132,11 @@
 	
 	var fileFlag=true;//是否重新获取文件列表
 	var state=0;//打印状态
-	
-	
+
 	device_id="4b3fd4b7/d0bae4001fdf";//网络测试数据
 	//device_id="555397aa/d0bae4003738";//本地测试数据
 	
-	document.title = device_id;//修改title
+	$("span[name='title']").html(alias);//修改title
 	
     // 如果设备ID不为空，则执行连接MQTT的操作
     if ( device_id !== null ){
@@ -193,7 +206,9 @@
 			if(result.id != null  && result.id==clientID){
 				console.log('返回数据<--:' +  message.payloadString);	
 				
-				//解析命令
+				//文件列表
+				//每次获取一组，获取之后,在获取下一条，next,
+				//文件列表里出现空，则不再获取
 				if(result.Files !=null && result.getFiles == 'ok'){
 					var next=true;
 					var filelist=new Array();
@@ -204,17 +219,12 @@
 							filelist.push(result.Files[i]);
 						}
 					}
+					$("#file-info").html("");
 					showFileList(filelist);
 					if(next){
 						mgetFiles('next');
 					}
 				}
-				
-				//文件列表
-				//每次获取一组，获取之后,在获取下一条，next,
-				//文件列表里出现空，则不再获取
-				//setTimeout(function(){mgetFiles('next');},1000);
-				
 				//打印文件
 				
 			}else if(result.id == null){
@@ -242,12 +252,15 @@
 					switch(result.state){
 						case 0:
 							$("#printstate").html("正在打印");
+							$("#sp ul").css("display","");
 							break;
 						case 1:
 							$("#printstate").html("空闲");
+							$("#sp ul").css("display","none");
 							break;
 						case 2:
 							$("#printstate").html("暂停打印");
+							$("#sp ul").css("display","");
 							break;
 					}
 				}
@@ -280,15 +293,19 @@
 		function mpause(){
 			var commond=new Object();
 			commond.printPC='NULL';
+			console.log("暂停/继续");	
 			send2uart(commond);
 		}
 		//暂停
 		document.querySelector('#pause').addEventListener('click', mpause);
 				
 		function mstop(){
-			var commond=new Object();
-			commond.printS='NULL';
-			send2uart(commond);
+			if(confirm("是否取消文件打印?")){
+				var commond=new Object();
+				commond.printS='NULL';
+				console.log("取消打印");			
+				send2uart(commond);
+			}
 		}
 		//停止
 		document.querySelector('#stop').addEventListener('click', mstop);
@@ -303,9 +320,12 @@
 			commond.getFiles=indicate;
 			
 			if(state == 1 ){//空闲时查询
+				if(indicate == 'first'){
+					$("#file-info").html("正在获取文件列表，请稍后...");
+				}
 				send2uart(commond);
 			}else{
-				alert("机器繁忙，请稍后再试");
+				$("#file-info").html("机器繁忙，请稍后再试");
 				console.log("机器繁忙，请稍后再试");
 			}
 		}
@@ -316,11 +336,14 @@
 		function printFile(fileName){
 			var commond=new Object();
 			commond.printFile=fileName;
-			
 			if(state ==1 ){//空闲时打印
-				send2uart(commond);
+				if(confirm("打印文件"+fileName+"吗?")){
+					console.log("打印文件："+fileName);
+					send2uart(commond);
+					window.location.hash = "pageone";
+				}
 			}else{
-				alert("机器繁忙，请稍后再试");
+				$("#file-info").html("机器繁忙，请稍后再试");
 				console.log("机器繁忙，请稍后再试");
 			}
 		}
@@ -334,7 +357,7 @@
 			}
 			for(var i=0;i<alist.length;i++){
 				var fileName=alist[i].trim();
-				$("#file-list ul").append("<li><div data-role=\"collapsible\" data-collapsed=\"true\"><h1 name=\"filename\">"+fileName+"</h1></div><a name=\"printfile"+index+"\">打印</a></li>");
+				$("#file-list ul").append("<li><div data-role=\"collapsible\" data-collapsed=\"true\"><span name=\"filename\">"+fileName+"</span><a name=\"printfile"+index+"\" style=\"float:right;\">打印</a></div></li>");
 				$("a[name='printfile"+index+"']").bind('click',{name:fileName},function(e){
 						var fileName=e.data.name; 
 						printFile(fileName);
