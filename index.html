@@ -96,10 +96,14 @@ $scope.unbind=function(item){
 	   okText:'确定',
      });
      confirmPopup.then(function(res) {
+								
+		console.log("test");
+	   
        if(res) {
 		$http.get("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+access_token+"&type=jsapi").success(function (response) {
 			
-			alert(response.ticket);
+			console.log("success");
+			console.log(response.ticket);
 			
 				//$http.post('http://www.fogcloud.io/v1/wechat/device/unbind',{
 //				  app_id:"a612dec2-49c3-4ebb-8eab-5b5e3be9e9ce",
