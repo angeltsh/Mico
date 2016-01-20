@@ -178,7 +178,7 @@
             // topic：通道
             // commond：指令
             client.publish = function(topic, commond) {
-				console.log("现在执行-->:"+commond);
+				//console.log("现在执行-->:"+commond);
 				returnQueue.push(commondQueue.shift());
                 message = new Paho.MQTT.Message(commond);
                 message.destinationName = topic;
@@ -204,7 +204,7 @@
 			result=eval("result="+result);
 			
 			if(result.id != null  && result.id==clientID){
-				console.log('返回数据<--:' +  message.payloadString);	
+				//console.log('返回数据<--:' +  message.payloadString);	
 				
 				//文件列表
 				//每次获取一组，获取之后,在获取下一条，next,

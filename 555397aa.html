@@ -178,7 +178,7 @@
             // topic：通道
             // commond：指令
             client.publish = function(topic, commond) {
-				console.log("现在执行-->:"+commond);
+				//console.log("现在执行-->:"+commond);
 				returnQueue.push(commondQueue.shift());
                 message = new Paho.MQTT.Message(commond);
                 message.destinationName = topic;
