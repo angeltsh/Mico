@@ -100,7 +100,9 @@ $scope.unbind=function(item){
 		console.log("test");
 	   
        if(res) {
-		$http.get("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+access_token+"&type=jsapi").success(function (response) {
+		$http.get("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+access_token+"&type=jsapi", {
+           headers:{'AUTHORIZATION' : "token " + access_token}}
+		  ).success(function (response) {
 			
 			console.log("success");
 			console.log(response.ticket);
